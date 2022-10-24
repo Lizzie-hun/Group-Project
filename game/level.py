@@ -1,5 +1,5 @@
 # The parent class for all the levels
-from game.gates import Gates
+from gates import Gates
 
 
 class Level:
@@ -29,7 +29,7 @@ class Level:
 
     def create_gates(self):
         # This creates the gates based off of the difficulty input into level
-        for i in range(self._gate_num + 1):
+        for i in range(self._gate_num ):
             # This creates an instance of the Gate and then appends it to the gate list
             level_gate = Gates()
             level_gate.create_operation()

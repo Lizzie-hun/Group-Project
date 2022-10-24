@@ -1,11 +1,15 @@
 # The gates that go inside of the levels.
-from distutils.command.build_scripts import first_line_re
-from game.actor import Actor
+from actor import Actor
 import random
 
 class Gates(Actor):
     def __init__(self):
         self._wrong_ans = ""
+        self._right_ans = ''
+        self._operation = ''
+
+    def get_gate(self):
+        return (self._operation, self._right_ans, self._wrong_ans)
 
     def create_operation(self):
         # Putting together the operation, the right answer, and the wrong answer

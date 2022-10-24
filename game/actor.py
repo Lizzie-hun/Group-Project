@@ -1,5 +1,5 @@
-from game import constants
-from game.point import Point
+import globals
+from point import Point
 
 class Actor:
     """A visible, moveable thing that participates in the game. The responsibility of Actor is to keep track of its appearance, position 
@@ -59,7 +59,7 @@ class Actor:
         return self._text
 
     def set_text(self, text):
-        self._text = text;
+        self._text = text
 
     def get_velocity(self):
         """Gets the actor's speed and direction.
