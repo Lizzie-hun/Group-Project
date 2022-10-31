@@ -16,6 +16,10 @@ class Gates(Actor):
         num = random.randint(1, 4)
         first_num = random.randint(1, 12)
         second_num = random.randint(1, 12)
+        while first_num < second_num:
+            first_num = random.randint(1, 12)
+            second_num = random.randint(1, 12)
+
         if num == 1:
             self._operation = f"{first_num} + {second_num}"
             self._right_ans = f"{first_num + second_num}"
