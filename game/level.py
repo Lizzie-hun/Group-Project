@@ -5,8 +5,8 @@ from gates import Gates
 class Level:
     def __init__(self, difficulty):
         self._difficulty = difficulty
-        self._speed = (1 * (difficulty/100)) + 1
-        self._gate_num = difficulty
+        self._speed = (difficulty/100) + 1
+        self._gate_num = difficulty + 9
         self._gates_list = []
 
     def get_speed(self):
