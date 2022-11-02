@@ -19,9 +19,7 @@ class Gates(Actor):
         while first_num < second_num and num == 3 or not first_num % second_num == 0 and num == 3:
             first_num = random.randint(1, 12)
             second_num = random.randint(1, 12)
-        
-        print(not first_num % second_num == 0, first_num % second_num)
-
+            
         if num == 1:
             self._operation = f"{first_num} + {second_num}"
         elif num == 2:

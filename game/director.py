@@ -1,5 +1,6 @@
 import arcade
 import globals
+from level import Level
 
 
 class Director(arcade.Window):
@@ -13,7 +14,32 @@ class Director(arcade.Window):
         # So we just see our object, not the pointer.
         self.set_mouse_visible(False)
 
+        self.player_list = None
+        self.gate_list = None
+
+        self.player_sprite = None
+        self.score = 0
+        self.score_text = None
+
         arcade.set_background_color(arcade.color.ASH_GREY)
+
+    def setup(self):
+        # Score stuff
+        self.score = 0
+
+        # Sprite lists
+        self.player_list = arcade.SpriteList()
+        self.gate_list = arcade.SpriteList()
+
+        # Player sprite stuff
+        self.player_list.append(self.player_sprite)
+
+        # The level the gates and their sprites.
+        level = Level(1)
+        level.create_gates()
+        for gate in level.get_gates():
+            print(gate.get_gate())
+
 
     def on_draw(self):
         """ Called whenever we need to draw the window. """
@@ -22,6 +48,9 @@ class Director(arcade.Window):
 
     def update(self, delta_time):
         print(f"updating actors with delta time of {delta_time}")
+
+        colliding = arcade.check_for_collision(self.player_sprite, self.gate_list)
+        
 
     def on_key_press(self, key, modifiers):
         """ Called whenever the user presses a key. """
