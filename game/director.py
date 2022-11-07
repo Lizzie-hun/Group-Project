@@ -1,6 +1,7 @@
 import arcade
 import globals
 from level import Level
+from player import PlayerCharacter
 
 
 class Director(arcade.Window):
@@ -14,10 +15,17 @@ class Director(arcade.Window):
         # So we just see our object, not the pointer.
         self.set_mouse_visible(False)
 
+        # This allows us to calculate player y movement
+        self.player_previous_y = 0
+
+        self.player = None
+        self.player_sprite = None
+
         self.player_list = None
         self.gate_list = None
 
-        self.player_sprite = None
+        self.physics_engine = None
+
         self.score = 0
         self.score_text = None
 
@@ -30,6 +38,23 @@ class Director(arcade.Window):
         # Sprite lists
         self.player_list = arcade.SpriteList()
         self.gate_list = arcade.SpriteList()
+
+        # Player
+        self.player = PlayerCharacter()
+        
+        # Physics Engine
+        self.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player,
+            gravity_constant=1.0,
+        )
+
+        # Starting location for player
+        self.player.center_x = globals.SCREEN_WIDTH // 2
+        self.player.center_y = globals.SCREEN_HEIGHT // 2
+
+        # Player scaling
+        self.player.scale = globals.SPRITE_SCALING_PLAYER
+
 
         # Player sprite stuff
         self.player_list.append(self.player_sprite)
