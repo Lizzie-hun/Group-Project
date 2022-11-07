@@ -17,28 +17,33 @@ class Director(arcade.Window):
         self.player_list = None
         self.gate_list = None
 
-        self.player_sprite = None
-        self.score = 0
-        self.score_text = None
-
-        arcade.set_background_color(arcade.color.ASH_GREY)
-
-    def setup(self):
         # Score stuff
         self.score = 0
+        self.score_text = None
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
         self.gate_list = arcade.SpriteList()
 
         # Player sprite stuff
+        self.player_sprite = arcade.Sprite("assets\\dino_blue\\idle\\tile000.png", 0.5)
+        self.player_sprite.center_x = 50
+        self.player_sprite.center_y = 70
         self.player_list.append(self.player_sprite)
 
         # The level the gates and their sprites.
-        level = Level(1)
-        level.create_gates()
-        for gate in level.get_gates():
+        self.level = Level(1)
+        self.level.create_gates()
+        for gate in self.level.get_gates():
             print(gate.get_gate())
+            gate_sprite = arcade.Sprite("assets\\dino_blue\\sprint\\blue_sprint_00.png", 1)
+
+            gate_sprite.center_x = 30
+            gate_sprite.center_y = 40
+
+            self.gate_list.append(gate_sprite)
+
+        arcade.set_background_color(arcade.color.ASH_GREY) 
 
 
     def on_draw(self):
@@ -49,7 +54,7 @@ class Director(arcade.Window):
     def update(self, delta_time):
         print(f"updating actors with delta time of {delta_time}")
 
-        colliding = arcade.check_for_collision(self.player_sprite, self.gate_list)
+        colliding = arcade.check_for_collision_with_list(self.player_sprite, self.gate_list)
         
 
     def on_key_press(self, key, modifiers):
