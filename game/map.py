@@ -3,11 +3,14 @@ import arcade
 # Constants
 SCREEN_WIDTH = globals.SCREEN_WIDTH
 SCREEN_HEIGHT = globals.SCREEN_HEIGHT
-SCREEN_TITLE = "Platformer"
-TILE_SCALING = globals.TILE_SCALING
+SCREEN_TITLE = "Dino Run"
+TILE_SCALING = 0.5
 
-# Constants used to scale our sprites from their original size
 
+# Map name
+map1_name = "Map/map1..tmj"
+map2_name = "Map/Map2.tmj"
+map_list = [map1_name, map2_name]
 
 # Layer Names from our TileMap
 LAYER_NAME_PLATFORMS = "Platforms"
@@ -26,13 +29,9 @@ class Map(arcade.TileMap):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
         self.tile_map = None
+        self.scene = None
     
     def setup(self):
-
-        # Map name
-        map1_name = "Map/map1..tmj"
-        map2_name = "Map/Map2.tmj"
-
 
         # Layer Specific Options for the Tilemap
         layer_options = {
@@ -54,4 +53,17 @@ class Map(arcade.TileMap):
         # # from the map as SpriteLists in the scene in the proper order.
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
-        
+
+    def layering_options():
+        layer_options = {
+            LAYER_NAME_PLATFORMS: {
+                "use_spatial_hash": True,
+            },
+            LAYER_NAME_FLOOR: {
+                "use_spatial_hash": True,
+            },
+            LAYER_NAME_CHECKPOINT: {
+                "use_spatial_hash": True,
+            },
+        }
+        return layer_options

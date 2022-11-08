@@ -2,6 +2,7 @@ import arcade
 import globals
 from level import Level
 from player import PlayerCharacter
+from map import Map
 
 
 class Director(arcade.Window):
@@ -32,9 +33,30 @@ class Director(arcade.Window):
         self.score = 0
         self.score_text = None
 
+        self.scene = None
+        self.map = None
+
+        self.camera = None
+        self.gui_camera = None
+
         arcade.set_background_color(arcade.color.ASH_GREY)
 
     def setup(self):
+        #-------------------------
+        # Map stuff - Sully
+        # Set up the Cameras
+        self.camera = arcade.Camera(self.width, self.height)
+        self.gui_camera = arcade.Camera(self.width, self.height)
+
+        # Map 
+        # self.map = Map()
+        self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, Map.layering_options)
+        self.scene = arcade.Scene.from_tilemap(self.map)
+
+        self.scene.add_sprite_list_after("Player", globals.LAYER_NAME_FOREGROUND)
+
+
+        #-------------------------
         # Score stuff
         self.score = 0
         self.score_text = None
@@ -44,7 +66,7 @@ class Director(arcade.Window):
         self.gate_list = arcade.SpriteList()
 
         #-------test wall------
-        self.wall_list = arcade.SpriteList()
+        # self.wall_list = arcade.SpriteList()
         #------remove this-----
 
         # Player
@@ -55,12 +77,13 @@ class Director(arcade.Window):
         # Starting location for player
         self.player.center_x = globals.SCREEN_WIDTH // 2
         self.player.center_y = globals.SCREEN_HEIGHT // 2
+        self.scene.add_sprite("Player", self.player)
 
         #--------Test Wall------------
-        wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
-        wall.center_x = 350
-        wall.center_y = 150
-        self.wall_list.append(wall)
+        # wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
+        # wall.center_x = 350
+        # wall.center_y = 150
+        # self.wall_list.append(wall)
         #-------Remove this-----------
 
         # The level the gates and their sprites.
@@ -68,7 +91,7 @@ class Director(arcade.Window):
         self.level.create_gates()
         for gate in self.level.get_gates():
             print(gate.get_gate())
-            gate_sprite = arcade.Sprite("assets\\dino_blue\\sprint\\blue_sprint_00.png", 1)
+            gate_sprite = arcade.Sprite("assets/dino_blue/sprint/blue_sprint_00.png", 1)
 
             gate_sprite.center_x = 30
             gate_sprite.center_y = 40
@@ -78,10 +101,26 @@ class Director(arcade.Window):
         # Physics Engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
-            self.wall_list,
+            floor=self.scene[globals.LAYER_NAME_FLOOR],
+            platforms=self.scene[globals.LAYER_NAME_PLATFORMS],
             gravity_constant=globals.GRAVITY,
         )
         arcade.set_background_color(arcade.color.ASH_GREY) 
+
+    
+    # Camera centered on sprite
+    def center_camera_to_player(self):
+        screen_center_x = self.player_sprite.center_x - (self.camera.viewport_width / 2)
+        screen_center_y = self.player_sprite.center_y - (
+            self.camera.viewport_height / 2
+        )
+        if screen_center_x < 0:
+            screen_center_x = 0
+        if screen_center_y < 0:
+            screen_center_y = 0
+        player_centered = screen_center_x, screen_center_y
+
+        self.camera.move_to(player_centered)
 
 
     def on_draw(self):
@@ -94,6 +133,7 @@ class Director(arcade.Window):
         # Filter is so the image isn't blurry
         self.player_list.draw(filter=arcade.gl.NEAREST)
         self.wall_list.draw()
+
         # Draw hitbox for player
         # self.player_list.draw_hit_boxes(line_thickness=5)
 
