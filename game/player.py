@@ -12,8 +12,12 @@ class PlayerCharacter(arcade.Sprite):
     def __init__(self):
         # Set up parent class
         super().__init__()
-        # Need to update this in director so we can load the proper facing characters
-        self.character_face_direction = RIGHT_FACING
+
+        # 0 for facing right, 1 for facing left. These correspond
+        # to indexes of player sprites, so either sprite[0] for left 
+        # or sprite[1] for right facing
+        self.facing_left = 1
+
         # Used for flipping between image sequences
         self.cur_walk_texture = 0
         self.cur_idle_texture = 0
@@ -49,12 +53,12 @@ class PlayerCharacter(arcade.Sprite):
     def switch_animation(self, animation):
         self.current_textures = animation
 
-    def update_animation(self, delta_time: float = 1 / 60):
+    def update_animation(self, facing, delta_time: float = 1 / 60):
         # Figure out if we need to flip face left or right
-        if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
-            self.character_face_direction = LEFT_FACING
-        elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
-            self.character_face_direction = RIGHT_FACING
+        if self.change_x < 0 and self.facing_left:
+            self.facing_left = False
+        elif self.change_x > 0 and not self.facing_left:
+            self.facing_left = True
 
         if self.current_textures == 0:
             # Idle animation
@@ -62,7 +66,7 @@ class PlayerCharacter(arcade.Sprite):
             if self.cur_idle_texture > 2.9 * globals.IDLE_UPDATES_PER_FRAME:
                 self.cur_idle_texture = 0
             frame = self.cur_idle_texture // globals.IDLE_UPDATES_PER_FRAME
-            direction = self.character_face_direction
+            direction = not self.facing_left
             self.texture = self.idle_textures[frame][direction]
         
         elif self.current_textures == 1:
@@ -71,16 +75,12 @@ class PlayerCharacter(arcade.Sprite):
             if self.cur_walk_texture > 6.9 * globals.UPDATES_PER_FRAME:
                 self.cur_walk_texture = 0
             frame = self.cur_walk_texture // globals.UPDATES_PER_FRAME
-            direction = self.character_face_direction
+            direction = not self.facing_left
             self.texture = self.walk_textures[frame][direction]
 
         elif self.current_textures == 2:
-            print('Y')
-            direction = self.character_face_direction
-
+            direction = not self.facing_left
             self.texture = self.jumping_textures[0][direction]
         elif self.current_textures == 3:
-            print('z')
-            direction = self.character_face_direction
-
+            direction = not self.facing_left
             self.texture = self.jumping_textures[1][direction]
