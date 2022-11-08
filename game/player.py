@@ -28,7 +28,7 @@ class PlayerCharacter(arcade.Sprite):
         self.points = [[-22, -64], [22, -64], [22, 28], [-22, 28]]
 
         # --- Load Textures ---
-        main_path = "C:/Users/nolan/Desktop/Dinos/dino_blue/"
+        main_path = "assets/dino_blue/"
 
         # Load textures for idle standing
         self.idle_textures = []
