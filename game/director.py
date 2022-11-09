@@ -55,7 +55,7 @@ class Director(arcade.Window):
 
         self.scene.add_sprite_list_after("Player", globals.LAYER_NAME_FOREGROUND)
 
-
+        print(self.map)
         #-------------------------
         # Score stuff
         self.score = 0
@@ -198,7 +198,7 @@ class Director(arcade.Window):
         self.player_list.update_animation()
 
         # Generate a list of all sprites that collided with the player.
-        hit_list = arcade.check_for_collision_with_list(self.player, self.wall_list)
+        hit_list = arcade.check_for_collision_with_list(self.player, self.scene)
 
                 
 
