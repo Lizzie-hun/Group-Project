@@ -50,7 +50,7 @@ class Director(arcade.Window):
 
         # Map 
         # self.map = Map()
-        self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, Map.layering_options)
+        self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
         self.scene.add_sprite_list_after("Player", globals.LAYER_NAME_FOREGROUND)
@@ -101,7 +101,7 @@ class Director(arcade.Window):
         # Physics Engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
-            floor=self.scene[globals.LAYER_NAME_FLOOR],
+            walls=self.scene[globals.LAYER_NAME_FLOOR],
             platforms=self.scene[globals.LAYER_NAME_PLATFORMS],
             gravity_constant=globals.GRAVITY,
         )
@@ -132,7 +132,7 @@ class Director(arcade.Window):
 
         # Filter is so the image isn't blurry
         self.player_list.draw(filter=arcade.gl.NEAREST)
-        self.wall_list.draw()
+        self.scene.draw()
 
         # Draw hitbox for player
         # self.player_list.draw_hit_boxes(line_thickness=5)
