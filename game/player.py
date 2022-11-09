@@ -27,6 +27,9 @@ class PlayerCharacter(arcade.Sprite):
         # side-to-side. Box is centered at sprite center, (0, 0)
         self.points = [[-22, -64], [22, -64], [22, 28], [-22, 28]]
 
+        # This is the operand that will be used to perform the math
+        self.operand = 2
+
         # --- Load Textures ---
         main_path = "assets/dino_blue/"
 
@@ -84,3 +87,13 @@ class PlayerCharacter(arcade.Sprite):
         elif self.current_textures == 3:
             direction = not self.facing_left
             self.texture = self.jumping_textures[1][direction]
+
+    def is_divisible(self, value):
+        if self.operand % value == 0:
+            self.operand += 1
+            return True
+        else:
+            return False
+    
+    def reset_operand(self):
+        self.operand = 2
