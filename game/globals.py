@@ -37,3 +37,24 @@ UPDATES_PER_FRAME = 5
 IDLE_UPDATES_PER_FRAME = 13
 CHARACTER_SCALING = 0.7
 GRAVITY = .7
+
+
+# Layer Names from our TileMap
+LAYER_NAME_PLATFORMS = "Platform"
+LAYER_NAME_FLOOR = "Floor"
+LAYER_NAME_CHECKPOINT = "Checkpoint"
+LAYER_NAME_FOREGROUND = "Foreground"
+LAYER_NAME_BACKGROUND = "Background"
+TILE_SCALING = 0.5
+
+LAYER_OPTIONS = {
+    LAYER_NAME_PLATFORMS: {
+        "use_spatial_hash": True,
+    },
+    LAYER_NAME_FLOOR: {
+        "use_spatial_hash": True,
+    },
+    LAYER_NAME_CHECKPOINT: {
+        "use_spatial_hash": True,
+    },
+}
