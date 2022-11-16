@@ -198,7 +198,7 @@ class Director(arcade.Window):
         self.player_list.update_animation()
 
         # Generate a list of all sprites that collided with the player.
-        hit_list = arcade.check_for_collision_with_list(self.player, self.scene)
+        # hit_list = arcade.check_for_collision_with_list(self.player, self.scene)
 
                 
 
