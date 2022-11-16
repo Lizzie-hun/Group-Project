@@ -53,7 +53,7 @@ class Director(arcade.Window):
         self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
-        self.scene.add_sprite_list_after("Player", globals.LAYER_NAME_FOREGROUND)
+        self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND)
 
         print(self.map)
         #-------------------------
@@ -77,12 +77,12 @@ class Director(arcade.Window):
         # Starting location for player
         self.player.center_x = globals.SCREEN_WIDTH // 2
         self.player.center_y = globals.SCREEN_HEIGHT // 2
-        self.scene.add_sprite("Player", self.player)
+        self.scene.add_sprite("PlayerCharacter", self.player)
 
         #--------Test Wall------------
-        # wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
-        # wall.center_x = 350
-        # wall.center_y = 150
+        wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
+        wall.center_x = 350
+        wall.center_y = 150
         # self.wall_list.append(wall)
         #-------Remove this-----------
 
@@ -102,7 +102,7 @@ class Director(arcade.Window):
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
             walls=self.scene[globals.LAYER_NAME_FLOOR],
-            platforms=self.scene[globals.LAYER_NAME_PLATFORMS],
+            platforms=self.scene.get_sprite_list(globals.LAYER_NAME_PLATFORMS),
             gravity_constant=globals.GRAVITY,
         )
         arcade.set_background_color(arcade.color.ASH_GREY) 
@@ -110,9 +110,8 @@ class Director(arcade.Window):
     
     # Camera centered on sprite
     def center_camera_to_player(self):
-        screen_center_x = self.player_sprite.center_x - (self.camera.viewport_width / 2)
-        screen_center_y = self.player_sprite.center_y - (
-            self.camera.viewport_height / 2
+        screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
+        screen_center_y = self.player.center_y - (self.camera.viewport_height / 2
         )
         if screen_center_x < 0:
             screen_center_x = 0
@@ -133,6 +132,8 @@ class Director(arcade.Window):
         # Filter is so the image isn't blurry
         self.player_list.draw(filter=arcade.gl.NEAREST)
         self.scene.draw()
+
+        self.camera.use()
 
         # Draw hitbox for player
         # self.player_list.draw_hit_boxes(line_thickness=5)
@@ -174,10 +175,13 @@ class Director(arcade.Window):
         """ Movement and game logic """
 
         # Update physics engine
-        self.physics_engine.update()
+        # self.physics_engine.update()
         
         # Move the player
         self.player_list.update()
+
+        # Camera Moving
+        self.center_camera_to_player()
 
         # Player is in the rising jump state
         # Buffer of 3 units because the players center y has minor fluctuations 
@@ -198,7 +202,7 @@ class Director(arcade.Window):
         self.player_list.update_animation()
 
         # Generate a list of all sprites that collided with the player.
-        # hit_list = arcade.check_for_collision_with_list(self.player, self.scene)
+        hit_list = arcade.check_for_collision_with_list(self.player, self.gate_list)
 
                 
 
