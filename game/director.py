@@ -54,7 +54,7 @@ class Director(arcade.Window):
         self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
-        self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND, False, self.player_list )
+        self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND, False, self.player_list)
 
         print(self.map)
         #-------------------------
@@ -76,8 +76,8 @@ class Director(arcade.Window):
         # Player scaling
         self.player.scale = globals.SPRITE_SCALING_PLAYER
         # Starting location for player
-        self.player.center_x = globals.SCREEN_WIDTH // 2
-        self.player.center_y = globals.SCREEN_HEIGHT // 2
+        self.player.center_x = globals.SCREEN_WIDTH // 4
+        self.player.center_y = globals.SCREEN_HEIGHT // 4
         self.scene.add_sprite("PlayerCharacter", self.player)
 
         #--------Test Wall------------
@@ -112,8 +112,7 @@ class Director(arcade.Window):
     # Camera centered on sprite
     def center_camera_to_player(self):
         screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
-        screen_center_y = self.player.center_y - (self.camera.viewport_height / 2
-        )
+        screen_center_y = -(self.camera.viewport_height / 2)
         if screen_center_x < 0:
             screen_center_x = 0
         if screen_center_y < 0:
