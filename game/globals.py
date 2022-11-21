@@ -30,14 +30,14 @@ MENU_BUTTON_BORDER_WIDTH = 2
 
 #Player
 SPRITE_SCALING_BOX = 0.5
-SPRITE_SCALING_PLAYER = 4
+SPRITE_SCALING_PLAYER = 1.5
 SPRITE_SCALING = 0.5
 MOVEMENT_SPEED = 3
-JUMP_SPEED = 10
+JUMP_SPEED = 7
 UPDATES_PER_FRAME = 5
 IDLE_UPDATES_PER_FRAME = 13
-CHARACTER_SCALING = 0.7
-GRAVITY = .5
+CHARACTER_SCALING = 0.3
+GRAVITY = 1
 
 
 # Layer Names from our TileMap
@@ -50,10 +50,10 @@ TILE_SCALING = 0.5
 
 LAYER_OPTIONS = {
     LAYER_NAME_PLATFORMS: {
-        "use_spatial_hash": True,
+        "use_spatial_hash": False,
     },
     LAYER_NAME_FLOOR: {
-        "use_spatial_hash": True,
+        "use_spatial_hash": False,
     },
     LAYER_NAME_CHECKPOINT: {
         "use_spatial_hash": True,

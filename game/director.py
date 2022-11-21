@@ -37,6 +37,7 @@ class Director(arcade.Window):
         self.map = None
 
         self.camera = None
+        # HUD camera
         self.gui_camera = None
 
         arcade.set_background_color(arcade.color.ASH_GREY)
@@ -53,7 +54,7 @@ class Director(arcade.Window):
         self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
-        self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND)
+        self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND, False, self.player_list )
 
         print(self.map)
         #-------------------------
@@ -80,9 +81,9 @@ class Director(arcade.Window):
         self.scene.add_sprite("PlayerCharacter", self.player)
 
         #--------Test Wall------------
-        wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
-        wall.center_x = 350
-        wall.center_y = 150
+        # wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
+        # wall.center_x = 350
+        # wall.center_y = 150
         # self.wall_list.append(wall)
         #-------Remove this-----------
 
@@ -101,9 +102,9 @@ class Director(arcade.Window):
         # Physics Engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
-            walls=self.scene[globals.LAYER_NAME_FLOOR],
             platforms=self.scene.get_sprite_list(globals.LAYER_NAME_PLATFORMS),
             gravity_constant=globals.GRAVITY,
+            walls=self.scene[globals.LAYER_NAME_FLOOR],
         )
         arcade.set_background_color(arcade.color.ASH_GREY) 
 
@@ -175,7 +176,7 @@ class Director(arcade.Window):
         """ Movement and game logic """
 
         # Update physics engine
-        # self.physics_engine.update()
+        self.physics_engine.update()
         
         # Move the player
         self.player_list.update()
