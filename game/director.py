@@ -130,8 +130,8 @@ class Director(arcade.Window):
         arcade.start_render()
 
         # Filter is so the image isn't blurry
-        self.player_list.draw(filter=arcade.gl.NEAREST)
-        self.scene.draw()
+        # self.player_list.draw(filter=arcade.gl.NEAREST)
+        self.scene.draw(filter=arcade.gl.NEAREST)
 
         self.camera.use()
 
