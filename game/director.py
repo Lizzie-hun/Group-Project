@@ -194,6 +194,10 @@ class Director(arcade.Window):
         elif self.player.velocity == [0.0, 0.0]:
             self.player.switch_animation(0)
 
+        if self.player.center_y < 0:
+            self.player.kill()
+            self.setup()
+
         # Track movement velocity. There is a built in way to do this 
         # but this is simple homemade code
         self.player_previous_y = self.player.center_y
