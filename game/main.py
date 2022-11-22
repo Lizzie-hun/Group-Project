@@ -2,7 +2,6 @@ import arcade
 from director import Director
 import globals
 from level import Level
-from gates import Gates
 
 def main():
     """ Main function """
