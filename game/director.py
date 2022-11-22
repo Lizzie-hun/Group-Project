@@ -40,6 +40,9 @@ class Director(arcade.Window):
         # HUD camera
         self.gui_camera = None
 
+        # Load sounds 
+        self.sound_jump = arcade.load_sound("assets/sounds/jump.wav")
+
         arcade.set_background_color(arcade.color.ASH_GREY)
 
     def setup(self):
@@ -147,6 +150,7 @@ class Director(arcade.Window):
         if key == arcade.key.UP:   
             if self.physics_engine.can_jump():
                 self.player.change_y = 10
+                arcade.play_sound(self.sound_jump)
         elif key == arcade.key.DOWN:
             self.player.change_y = -globals.MOVEMENT_SPEED
 
