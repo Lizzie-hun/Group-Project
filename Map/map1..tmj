@@ -151,15 +151,15 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"Map/background2.tsx"
+         "source":"background2.tsx"
         }, 
         {
          "firstgid":505,
-         "source":"Map/assets.tsx"
+         "source":"assets.tsx"
         }, 
         {
          "firstgid":1529,
-         "source":"Map/checkpoint.tsx"
+         "source":"checkpoint.tsx"
         }, 
         {
          "columns":0,
