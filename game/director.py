@@ -24,6 +24,7 @@ class Director(arcade.Window):
 
         self.player = None
         self.player_sprite = None
+        self.playerNumber = arcade.load_texture("assets/numbers/2.png")
 
         self.player_list = None
         self.gate_list = None
@@ -142,6 +143,9 @@ class Director(arcade.Window):
         # Draw hitbox for player
         self.player_list.draw_hit_boxes(line_thickness=5)
 
+        # Draw the number above the player
+        self.playerNumber.draw_scaled(self.player.center_x, self.player.center_y + 50, .1)
+
     def on_key_press(self, key, modifiers):
         """ Called whenever the user presses a key. """
 
@@ -213,6 +217,9 @@ class Director(arcade.Window):
 
         # Generate a list of all sprites that collided with the player.
         hit_list = arcade.check_for_collision_with_list(self.player, self.gate_list)
+
+        # Update the divisor
+
 
                 
 
