@@ -24,6 +24,7 @@ class Director(arcade.Window):
 
         self.player = None
         self.player_sprite = None
+        self.playerNumber = arcade.load_texture("assets/numbers/2.png")
 
         self.player_list = None
         self.gate_list = None
@@ -41,11 +42,12 @@ class Director(arcade.Window):
         self.gui_camera = None
 
         # Load sounds 
+        self.sound_falling = arcade.load_sound("assets/sounds/falling.wav")
         self.sound_jump = arcade.load_sound("assets/sounds/jump.wav")
 
         arcade.set_background_color(arcade.color.ASH_GREY)
 
-    def setup(self):
+    def setup(self, mapId = 1):
         #-------------------------
         # Map stuff - Sully
         # Set up the Cameras
@@ -139,7 +141,10 @@ class Director(arcade.Window):
         self.camera.use()
 
         # Draw hitbox for player
-        # self.player_list.draw_hit_boxes(line_thickness=5)
+        self.player_list.draw_hit_boxes(line_thickness=5)
+
+        # Draw the number above the player
+        self.playerNumber.draw_scaled(self.player.center_x, self.player.center_y + 50, .1)
 
     def on_key_press(self, key, modifiers):
         """ Called whenever the user presses a key. """
@@ -199,6 +204,7 @@ class Director(arcade.Window):
             self.player.switch_animation(0)
 
         if self.player.center_y < 0:
+            arcade.play_sound(self.sound_falling)
             self.player.kill()
             self.setup()
 
@@ -211,6 +217,9 @@ class Director(arcade.Window):
 
         # Generate a list of all sprites that collided with the player.
         hit_list = arcade.check_for_collision_with_list(self.player, self.gate_list)
+
+        # Update the divisor
+
 
                 
 
