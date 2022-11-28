@@ -54,7 +54,7 @@ class Director(arcade.Window):
 
         # Map 
         # self.map = Map()
-        self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
+        self.map = arcade.load_tilemap("Map/Map2.tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
         self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND, False, self.player_list)
@@ -79,7 +79,7 @@ class Director(arcade.Window):
         # Player scaling
         self.player.scale = globals.SPRITE_SCALING_PLAYER
         # Starting location for player
-        self.player.center_x = globals.SCREEN_WIDTH // 4
+        self.player.center_x = globals.SCREEN_WIDTH // 5
         self.player.center_y = globals.SCREEN_HEIGHT // 4
         self.scene.add_sprite("PlayerCharacter", self.player)
 
