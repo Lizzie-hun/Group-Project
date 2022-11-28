@@ -1,8 +1,7 @@
 # The gates that go inside of the levels.
-from actor import Actor
 import random
 
-class Gates(Actor):
+class Gates():
     def __init__(self):
         self._wrong_ans = ""
         self._right_ans = ''

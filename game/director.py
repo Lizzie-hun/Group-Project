@@ -37,7 +37,11 @@ class Director(arcade.Window):
         self.map = None
 
         self.camera = None
+        # HUD camera
         self.gui_camera = None
+
+        # Load sounds 
+        self.sound_jump = arcade.load_sound("assets/sounds/jump.wav")
 
         arcade.set_background_color(arcade.color.ASH_GREY)
 
@@ -53,7 +57,7 @@ class Director(arcade.Window):
         self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
-        self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND)
+        self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND, False, self.player_list)
 
         print(self.map)
         #-------------------------
@@ -75,14 +79,14 @@ class Director(arcade.Window):
         # Player scaling
         self.player.scale = globals.SPRITE_SCALING_PLAYER
         # Starting location for player
-        self.player.center_x = globals.SCREEN_WIDTH // 2
-        self.player.center_y = globals.SCREEN_HEIGHT // 2
+        self.player.center_x = globals.SCREEN_WIDTH // 4
+        self.player.center_y = globals.SCREEN_HEIGHT // 4
         self.scene.add_sprite("PlayerCharacter", self.player)
 
         #--------Test Wall------------
-        wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
-        wall.center_x = 350
-        wall.center_y = 150
+        # wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
+        # wall.center_x = 350
+        # wall.center_y = 150
         # self.wall_list.append(wall)
         #-------Remove this-----------
 
@@ -101,9 +105,9 @@ class Director(arcade.Window):
         # Physics Engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
-            walls=self.scene[globals.LAYER_NAME_FLOOR],
             platforms=self.scene.get_sprite_list(globals.LAYER_NAME_PLATFORMS),
             gravity_constant=globals.GRAVITY,
+            walls=self.scene[globals.LAYER_NAME_FLOOR],
         )
         arcade.set_background_color(arcade.color.ASH_GREY) 
 
@@ -111,8 +115,7 @@ class Director(arcade.Window):
     # Camera centered on sprite
     def center_camera_to_player(self):
         screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
-        screen_center_y = self.player.center_y - (self.camera.viewport_height / 2
-        )
+        screen_center_y = -(self.camera.viewport_height / 2)
         if screen_center_x < 0:
             screen_center_x = 0
         if screen_center_y < 0:
@@ -130,8 +133,8 @@ class Director(arcade.Window):
         arcade.start_render()
 
         # Filter is so the image isn't blurry
-        self.player_list.draw(filter=arcade.gl.NEAREST)
-        self.scene.draw()
+        # self.player_list.draw(filter=arcade.gl.NEAREST)
+        self.scene.draw(filter=arcade.gl.NEAREST)
 
         self.camera.use()
 
@@ -147,6 +150,7 @@ class Director(arcade.Window):
         if key == arcade.key.UP:   
             if self.physics_engine.can_jump():
                 self.player.change_y = 10
+                arcade.play_sound(self.sound_jump)
         elif key == arcade.key.DOWN:
             self.player.change_y = -globals.MOVEMENT_SPEED
 
@@ -175,7 +179,7 @@ class Director(arcade.Window):
         """ Movement and game logic """
 
         # Update physics engine
-        # self.physics_engine.update()
+        self.physics_engine.update()
         
         # Move the player
         self.player_list.update()
@@ -193,6 +197,10 @@ class Director(arcade.Window):
         # Player is not moving and is idle
         elif self.player.velocity == [0.0, 0.0]:
             self.player.switch_animation(0)
+
+        if self.player.center_y < 0:
+            self.player.kill()
+            self.setup()
 
         # Track movement velocity. There is a built in way to do this 
         # but this is simple homemade code
