@@ -41,11 +41,12 @@ class Director(arcade.Window):
         self.gui_camera = None
 
         # Load sounds 
+        self.sound_falling = arcade.load_sound("assets/sounds/falling.wav")
         self.sound_jump = arcade.load_sound("assets/sounds/jump.wav")
 
         arcade.set_background_color(arcade.color.ASH_GREY)
 
-    def setup(self):
+    def setup(self, mapId = 1):
         #-------------------------
         # Map stuff - Sully
         # Set up the Cameras
@@ -139,7 +140,7 @@ class Director(arcade.Window):
         self.camera.use()
 
         # Draw hitbox for player
-        # self.player_list.draw_hit_boxes(line_thickness=5)
+        self.player_list.draw_hit_boxes(line_thickness=5)
 
     def on_key_press(self, key, modifiers):
         """ Called whenever the user presses a key. """
@@ -199,6 +200,7 @@ class Director(arcade.Window):
             self.player.switch_animation(0)
 
         if self.player.center_y < 0:
+            arcade.play_sound(self.sound_falling)
             self.player.kill()
             self.setup()
 
