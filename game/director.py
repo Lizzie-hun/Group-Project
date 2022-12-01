@@ -3,6 +3,8 @@ import globals
 from level import Level
 from player import PlayerCharacter
 from map import Map
+import json
+import random
 
 
 class Director(arcade.Window):
@@ -44,6 +46,8 @@ class Director(arcade.Window):
         # Load sounds 
         self.sound_falling = arcade.load_sound("assets/sounds/falling.wav")
         self.sound_jump = arcade.load_sound("assets/sounds/jump.wav")
+        # Playing the sound here at the start at 0 volume prevents the lag when the player first jumps
+        arcade.play_sound(self.sound_jump, 0)
 
         arcade.set_background_color(arcade.color.ASH_GREY)
 
@@ -55,13 +59,14 @@ class Director(arcade.Window):
         self.gui_camera = arcade.Camera(self.width, self.height)
 
         # Map 
-        # self.map = Map()
-        self.map = arcade.load_tilemap("Map/Map2.tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
+        # self.map = Map()       
+
+
+        self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
         self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND, False, self.player_list)
 
-        print(self.map)
         #-------------------------
         # Score stuff
         self.score = 0
@@ -70,6 +75,27 @@ class Director(arcade.Window):
         # Sprite lists
         self.player_list = arcade.SpriteList()
         self.gate_list = arcade.SpriteList()
+
+
+        gateLocations = []
+        mapData = ""
+        with open('Map/map1..tmj', "r") as map1:
+            mapData = json.load(map1)
+            mapData = mapData['layers'][4]['data']
+            for i in range(3400):
+                if mapData[i] != 0:
+                    # print(f'[{i}] {mapData[i]}')
+                    y = i / 200
+                    y = 14-y
+                    x = i % 200
+                    print(x,y)
+                    gateLocations.append([x*32,y*32, random.randint(0, 9)])
+        
+        for gate in gateLocations:
+            gateSprite = arcade.Sprite(f'assets/numbers/{gate[2]}.png', globals.SPRITE_SCALING/3)
+            gateSprite.center_x = gate[0] + 20
+            gateSprite.center_y = gate[1] + 90
+            self.gate_list.append(gateSprite)
 
         #-------test wall------
         # self.wall_list = arcade.SpriteList()
@@ -91,18 +117,6 @@ class Director(arcade.Window):
         # wall.center_y = 150
         # self.wall_list.append(wall)
         #-------Remove this-----------
-
-        # The level the gates and their sprites.
-        self.level = Level(1)
-        self.level.create_gates()
-        for gate in self.level.get_gates():
-            print(gate.get_gate())
-            gate_sprite = arcade.Sprite("assets/dino_blue/sprint/blue_sprint_00.png", 1)
-
-            gate_sprite.center_x = 30
-            gate_sprite.center_y = 40
-
-            self.gate_list.append(gate_sprite)
 
         # Physics Engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(
@@ -137,6 +151,7 @@ class Director(arcade.Window):
         # Filter is so the image isn't blurry
         # self.player_list.draw(filter=arcade.gl.NEAREST)
         self.scene.draw(filter=arcade.gl.NEAREST)
+        self.gate_list.draw()
 
         self.camera.use()
 
@@ -217,7 +232,8 @@ class Director(arcade.Window):
 
         # Generate a list of all sprites that collided with the player.
         hit_list = arcade.check_for_collision_with_list(self.player, self.gate_list)
-
+        if len(hit_list) != 0:
+            print(hit_list)
         # Update the divisor
 
 
