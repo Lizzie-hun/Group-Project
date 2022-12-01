@@ -130,15 +130,21 @@ class Director(arcade.Window):
     
     # Camera centered on sprite
     def center_camera_to_player(self):
-        screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
-        screen_center_y = -(self.camera.viewport_height / 2)
-        if screen_center_x < 0:
-            screen_center_x = 0
-        if screen_center_y < 0:
-            screen_center_y = 0
-        player_centered = screen_center_x, screen_center_y
+        print(f"width: {self.map.width}")
+        print(f"height: {self.map.height}")
+        print(f"Camera w: {self.camera.viewport_width}")
+        print(f"Player: {self.player.center_x}")
+        if self.player.center_x < ((self.map.width*32) - (self.camera.viewport_width / 2)):
+            screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
+            screen_center_y = -(self.camera.viewport_height / 2)
+            if screen_center_x < 0:
+                screen_center_x = 0
+            if screen_center_y < 0:
+                screen_center_y = 0
+            player_centered = screen_center_x, screen_center_y
 
-        self.camera.move_to(player_centered)
+            self.camera.move_to(player_centered)
+        
 
 
     def on_draw(self):
