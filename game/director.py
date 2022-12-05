@@ -47,7 +47,7 @@ class Director(arcade.Window):
 
         arcade.set_background_color(arcade.color.ASH_GREY)
 
-    def setup(self, mapId = 1):
+    def setup(self, mapId):
         #-------------------------
         # Map stuff - Sully
         # Set up the Cameras
@@ -56,7 +56,7 @@ class Director(arcade.Window):
 
         # Map 
         # self.map = Map()
-        self.map = arcade.load_tilemap("Map/Map2.tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
+        self.map = arcade.load_tilemap(f"Map/map{mapId}.tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
         self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND, False, self.player_list)
@@ -103,6 +103,7 @@ class Director(arcade.Window):
             gate_sprite.center_y = 40
 
             self.gate_list.append(gate_sprite)
+
 
         # Physics Engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(
@@ -217,6 +218,9 @@ class Director(arcade.Window):
 
         # Generate a list of all sprites that collided with the player.
         hit_list = arcade.check_for_collision_with_list(self.player, self.gate_list)
+
+        if arcade.check_for_collision_with_list(self.player, self.scene[globals.LAYER_NAME_CHECKPOINT]):
+            self.setup(2)
 
         # Update the divisor
 
