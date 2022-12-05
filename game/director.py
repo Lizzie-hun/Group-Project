@@ -41,6 +41,7 @@ class Director(arcade.Window):
 
         self.scene = None
         self.map = None
+        self.mapId = 1
 
         self.camera = None
         # HUD camera
@@ -54,7 +55,7 @@ class Director(arcade.Window):
 
         arcade.set_background_color(arcade.color.ASH_GREY)
 
-    def setup(self, mapId):
+    def setup(self):
         #-------------------------
         # Map stuff - Sully
         # Set up the Cameras
@@ -65,7 +66,7 @@ class Director(arcade.Window):
         # self.map = Map()       
 
 
-        self.map = arcade.load_tilemap("Map/map1..tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
+        self.map = arcade.load_tilemap(f"Map/map{self.mapId}.tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
         self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND, False, self.player_list)
@@ -82,7 +83,7 @@ class Director(arcade.Window):
 
         gateLocations = []
         mapData = ""
-        with open('Map/map1..tmj', "r") as map1:
+        with open(f'Map/map{self.mapId}.tmj', "r") as map1:
             mapData = json.load(map1)
             mapData = mapData['layers'][4]['data']
             for i in range(3400):
