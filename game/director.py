@@ -2,7 +2,10 @@ import arcade
 import globals
 from level import Level
 from player import PlayerCharacter
+from gates import Gate
 from map import Map
+import json
+import random
 
 
 class Director(arcade.Window):
@@ -18,7 +21,10 @@ class Director(arcade.Window):
 
         # This allows us to calculate player y movement
         self.player_previous_y = 0
-
+        self.player_speed = globals.MOVEMENT_SPEED
+        self.sprint_cooldown = 0
+        self.movingLeft = False
+        self.movingRight = False
         # What direction the player is supposed to face
         self.facing_right = True
 
@@ -36,6 +42,7 @@ class Director(arcade.Window):
 
         self.scene = None
         self.map = None
+        self.mapId = 1
 
         self.camera = None
         # HUD camera
@@ -44,10 +51,12 @@ class Director(arcade.Window):
         # Load sounds 
         self.sound_falling = arcade.load_sound("assets/sounds/falling.wav")
         self.sound_jump = arcade.load_sound("assets/sounds/jump.wav")
+        # Playing the sound here at the start at 0 volume prevents the lag when the player first jumps
+        arcade.play_sound(self.sound_jump, 0)
 
         arcade.set_background_color(arcade.color.ASH_GREY)
 
-    def setup(self, mapId = 1):
+    def setup(self):
         #-------------------------
         # Map stuff - Sully
         # Set up the Cameras
@@ -55,13 +64,14 @@ class Director(arcade.Window):
         self.gui_camera = arcade.Camera(self.width, self.height)
 
         # Map 
-        # self.map = Map()
-        self.map = arcade.load_tilemap("Map/Map2.tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
+        # self.map = Map()       
+
+
+        self.map = arcade.load_tilemap(f"Map/map{self.mapId}.tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
         self.scene.add_sprite_list_after("PlayerCharacter", globals.LAYER_NAME_FOREGROUND, False, self.player_list)
 
-        print(self.map)
         #-------------------------
         # Score stuff
         self.score = 0
@@ -70,6 +80,27 @@ class Director(arcade.Window):
         # Sprite lists
         self.player_list = arcade.SpriteList()
         self.gate_list = arcade.SpriteList()
+
+
+        gateLocations = []
+        mapData = ""
+        with open(f'Map/map{self.mapId}.tmj', "r") as map1:
+            mapData = json.load(map1)
+            mapData = mapData['layers'][4]['data']
+            for i in range(3400):
+                if mapData[i] != 0:
+                    # print(f'[{i}] {mapData[i]}')
+                    y = i / 200
+                    y = 14-y
+                    x = i % 200
+                    print(x,y)
+                    gateLocations.append([x*32,y*32, random.randint(0, 9)])
+        
+        for gate in gateLocations:
+            gateSprite = Gate(f'assets/numbers/{gate[2]}.png', globals.SPRITE_SCALING/3, gate[2])
+            gateSprite.center_x = gate[0] + 20
+            gateSprite.center_y = gate[1] + 90
+            self.gate_list.append(gateSprite)
 
         #-------test wall------
         # self.wall_list = arcade.SpriteList()
@@ -103,7 +134,7 @@ class Director(arcade.Window):
             gate_sprite.center_y = 40
 
             self.gate_list.append(gate_sprite)
-        
+
         # Physics Engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
@@ -116,15 +147,21 @@ class Director(arcade.Window):
     
     # Camera centered on sprite
     def center_camera_to_player(self):
-        screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
-        screen_center_y = -(self.camera.viewport_height / 2)
-        if screen_center_x < 0:
-            screen_center_x = 0
-        if screen_center_y < 0:
-            screen_center_y = 0
-        player_centered = screen_center_x, screen_center_y
+        # print(f"width: {self.map.width}")
+        # print(f"height: {self.map.height}")
+        # print(f"Camera w: {self.camera.viewport_width}")
+        # print(f"Player: {self.player.center_x}")
+        if self.player.center_x < ((self.map.width*32) - (self.camera.viewport_width / 2)):
+            screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
+            screen_center_y = -(self.camera.viewport_height / 2)
+            if screen_center_x < 0:
+                screen_center_x = 0
+            if screen_center_y < 0:
+                screen_center_y = 0
+            player_centered = screen_center_x, screen_center_y
 
-        self.camera.move_to(player_centered)
+            self.camera.move_to(player_centered)
+        
 
 
     def on_draw(self):
@@ -137,11 +174,14 @@ class Director(arcade.Window):
         # Filter is so the image isn't blurry
         # self.player_list.draw(filter=arcade.gl.NEAREST)
         self.scene.draw(filter=arcade.gl.NEAREST)
+        self.gate_list.draw_hit_boxes(arcade.color_from_hex_string('FFF'), 5)
+        self.gate_list.draw()
+
 
         self.camera.use()
 
         # Draw hitbox for player
-        self.player_list.draw_hit_boxes(line_thickness=5)
+        # self.player_list.draw_hit_boxes(line_thickness=5)
 
         # Draw the number above the player
         self.playerNumber.draw_scaled(self.player.center_x, self.player.center_y + 50, .1)
@@ -157,24 +197,23 @@ class Director(arcade.Window):
                 self.player.change_y = 10
                 arcade.play_sound(self.sound_jump)
         elif key == arcade.key.DOWN:
-            self.player.change_y = -globals.MOVEMENT_SPEED
+            self.player.change_y = -self.player_speed
 
         elif key == arcade.key.LEFT:
-            self.player.change_x = -globals.MOVEMENT_SPEED
+            self.movingRight = False
+            self.movingLeft = True
+            # self.player.change_x = -self.player_speed
 
         elif key == arcade.key.RIGHT:
-            self.player.change_x = globals.MOVEMENT_SPEED
+            self.movingLeft = False
+            self.movingRight = True
+            # self.player.change_x = self.player_speed
 
     def on_key_release(self, key, modifiers):
-
-        if key == arcade.key.UP or key == arcade.key.DOWN:
-            KEY_UP = False
-            self.player.change_y = 0
-
-        if key == arcade.key.UP:
-            self.player.change_y = 0
-        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player.change_x = 0
+        if key == arcade.key.LEFT:
+            self.movingLeft = False
+        elif key == arcade.key.RIGHT:
+            self.movingRight = False
 
         # See player class for animation states
         self.player.switch_animation(0)
@@ -188,6 +227,19 @@ class Director(arcade.Window):
         
         # Move the player
         self.player_list.update()
+
+        if self.movingLeft:
+            self.player.change_x = -self.player_speed
+            print("moving left")
+        if self.movingRight:
+            self.player.change_x = self.player_speed
+        if not self.movingRight and not self.movingLeft:
+            self.player.change_x = 0
+        
+
+
+
+
 
         # Camera Moving
         self.center_camera_to_player()
@@ -208,6 +260,12 @@ class Director(arcade.Window):
             self.player.kill()
             self.setup()
 
+        print(self.player_speed)
+        if self.sprint_cooldown > 0:
+            self.sprint_cooldown -= 1
+        else:
+            self.player_speed = globals.MOVEMENT_SPEED
+
         # Track movement velocity. There is a built in way to do this 
         # but this is simple homemade code
         self.player_previous_y = self.player.center_y
@@ -217,8 +275,17 @@ class Director(arcade.Window):
 
         # Generate a list of all sprites that collided with the player.
         hit_list = arcade.check_for_collision_with_list(self.player, self.gate_list)
+        if len(hit_list) != 0:
+            for i in hit_list:
+                if isinstance(i, Gate):
+                    if i.value % self.player.operand == 0:
+                        self.player_speed = globals.SPRINT_SPEED
+                        self.sprint_cooldown = globals.SPRINT_COOLDOWN
+                    elif i.value % self.player.operand == 1:
+                        self.player_speed = globals.SLOW_SPEED
+                        self.sprint_cooldown = globals.SPRINT_COOLDOWN
+                    i.kill()
 
-        # Update the divisor
 
 
                 
