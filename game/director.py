@@ -165,7 +165,18 @@ class Director(arcade.Window):
         self.gate_list.draw_hit_boxes(arcade.color_from_hex_string('FFF'), 5)
         self.gate_list.draw()
 
+        # Activate the GUI camera before drawing GUI elements
+        self.gui_camera.use()
 
+        # Draw our score on the screen, scrolling it with the viewport
+        score_text = f"Score: {self.score}"
+        arcade.draw_text(
+            score_text,
+            10,
+            10,
+            arcade.csscolor.WHITE,
+            18,
+        )
         self.camera.use()
 
         # Draw hitbox for player
@@ -173,6 +184,8 @@ class Director(arcade.Window):
 
         # Draw the number above the player
         self.playerNumber.draw_scaled(self.player.center_x, self.player.center_y + 50, .1)
+
+
 
     def on_key_press(self, key, modifiers):
         """ Called whenever the user presses a key. """
@@ -269,6 +282,7 @@ class Director(arcade.Window):
                     if i.value % self.player.operand == 0:
                         self.player_speed = globals.SPRINT_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
+                        self.score += 1
                     elif i.value % self.player.operand == 1:
                         self.player_speed = globals.SLOW_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
