@@ -68,7 +68,6 @@ class Director(arcade.Window):
         # Map 
         # self.map = Map()       
 
-
         self.map = arcade.load_tilemap(f"Map/map{self.mapId}.tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
@@ -83,15 +82,16 @@ class Director(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.gate_list = arcade.SpriteList()
 
-
+    
         gateLocations = []
         mapData = ""
         with open(f'Map/map{self.mapId}.tmj', "r") as map1:
             mapData = json.load(map1)
             mapData = mapData['layers'][4]['data']
-            for i in range(3400):
+            print(self.map.width*17)
+            for i in range(self.map.width*17):
                 if mapData[i] != 0:
-                    # print(f'[{i}] {mapData[i]}')
+                    print(f'[{i}] {mapData[i]}')
                     y = i / 200
                     y = 14-y
                     x = i % 200
@@ -167,7 +167,18 @@ class Director(arcade.Window):
         self.gate_list.draw_hit_boxes(arcade.color_from_hex_string('FFF'), 5)
         self.gate_list.draw()
 
+        # Activate the GUI camera before drawing GUI elements
+        self.gui_camera.use()
 
+        # Draw our score on the screen, scrolling it with the viewport
+        score_text = f"Score: {self.score}"
+        arcade.draw_text(
+            score_text,
+            10,
+            10,
+            arcade.csscolor.WHITE,
+            18,
+        )
         self.camera.use()
 
         # Draw hitbox for player
@@ -175,6 +186,8 @@ class Director(arcade.Window):
 
         # Draw the number above the player
         self.playerNumber.draw_scaled(self.player.center_x, self.player.center_y + 50, .1)
+
+
 
     def on_key_press(self, key, modifiers):
         """ Called whenever the user presses a key. """
@@ -266,14 +279,24 @@ class Director(arcade.Window):
                     if i.value % self.player.operand == 0:
                         self.player_speed = globals.SPRINT_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
+<<<<<<< HEAD
                         arcade.play_sound(self.sound_powerUp)
                         self.player.operand += 1
+=======
+                        self.score += 1
+>>>>>>> 83eb2c411beba72b12b970ca7ed1092817f25b1c
                     elif i.value % self.player.operand == 1:
                         self.player_speed = globals.SLOW_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
                         arcade.play_sound(self.sound_hurt)
                     i.kill()
-
+        
+        if self.player.center_x > ((self.map.width*32) - (self.camera.viewport_width / 4)): 
+            try:
+                self.mapId+=1
+            except:
+                game_over()
+            self.setup()
 
 
                 

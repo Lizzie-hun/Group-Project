@@ -7,7 +7,7 @@ def main():
     """ Main function """
 
     window = Director(globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.SCREEN_TITLE)
-    window.setup(1)
+    window.setup()
     arcade.run()
 
 if __name__ == "__main__":
