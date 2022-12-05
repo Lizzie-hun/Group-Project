@@ -51,6 +51,8 @@ class Director(arcade.Window):
         # Load sounds 
         self.sound_falling = arcade.load_sound("assets/sounds/falling.wav")
         self.sound_jump = arcade.load_sound("assets/sounds/jump.wav")
+        self.sound_powerUp = arcade.load_sound("assets/sounds/powerUp.wav")
+        self.sound_hurt = arcade.load_sound("assets/sounds/hurt.wav")
         # Playing the sound here at the start at 0 volume prevents the lag when the player first jumps
         arcade.play_sound(self.sound_jump, 0)
 
@@ -97,7 +99,7 @@ class Director(arcade.Window):
                     gateLocations.append([x*32,y*32, random.randint(0, 9)])
         
         for gate in gateLocations:
-            gateSprite = Gate(f'assets/numbers/{gate[2]}.png', globals.SPRITE_SCALING/3, gate[2])
+            gateSprite = Gate(globals.SPRITE_SCALING/3, gate[2])
             gateSprite.center_x = gate[0] + 20
             gateSprite.center_y = gate[1] + 90
             self.gate_list.append(gateSprite)
@@ -223,11 +225,6 @@ class Director(arcade.Window):
             self.player.change_x = self.player_speed
         if not self.movingRight and not self.movingLeft:
             self.player.change_x = 0
-        
-
-
-
-
 
         # Camera Moving
         self.center_camera_to_player()
@@ -269,9 +266,12 @@ class Director(arcade.Window):
                     if i.value % self.player.operand == 0:
                         self.player_speed = globals.SPRINT_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
+                        arcade.play_sound(self.sound_powerUp)
+                        self.player.operand += 1
                     elif i.value % self.player.operand == 1:
                         self.player_speed = globals.SLOW_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
+                        arcade.play_sound(self.sound_hurt)
                     i.kill()
 
 
