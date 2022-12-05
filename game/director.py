@@ -66,7 +66,6 @@ class Director(arcade.Window):
         # Map 
         # self.map = Map()       
 
-
         self.map = arcade.load_tilemap(f"Map/map{self.mapId}.tmj", globals.TILE_SCALING, globals.LAYER_OPTIONS)
         self.scene = arcade.Scene.from_tilemap(self.map)
 
@@ -81,15 +80,16 @@ class Director(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.gate_list = arcade.SpriteList()
 
-
+    
         gateLocations = []
         mapData = ""
         with open(f'Map/map{self.mapId}.tmj', "r") as map1:
             mapData = json.load(map1)
             mapData = mapData['layers'][4]['data']
-            for i in range(3400):
+            print(self.map.width*17)
+            for i in range(self.map.width*17):
                 if mapData[i] != 0:
-                    # print(f'[{i}] {mapData[i]}')
+                    print(f'[{i}] {mapData[i]}')
                     y = i / 200
                     y = 14-y
                     x = i % 200
@@ -273,7 +273,14 @@ class Director(arcade.Window):
                         self.player_speed = globals.SLOW_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
                     i.kill()
-
+        
+        if self.player.center_x > ((self.map.width*32) - (self.camera.viewport_width / 4)): 
+            try:
+                self.mapId+=1
+            except:
+                game_over()
+                break
+            self.setup()
 
 
                 
