@@ -279,12 +279,9 @@ class Director(arcade.Window):
                     if i.value % self.player.operand == 0:
                         self.player_speed = globals.SPRINT_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
-<<<<<<< HEAD
                         arcade.play_sound(self.sound_powerUp)
                         self.player.operand += 1
-=======
                         self.score += 1
->>>>>>> 83eb2c411beba72b12b970ca7ed1092817f25b1c
                     elif i.value % self.player.operand == 1:
                         self.player_speed = globals.SLOW_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN

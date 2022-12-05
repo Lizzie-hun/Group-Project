@@ -52,6 +52,8 @@ class PlayerCharacter(arcade.Sprite):
         self.jumping_textures.append(up)
         self.jumping_textures.append(down)
 
+    def set_speed(speed):
+        self.speed = speed
 
     def switch_animation(self, animation):
         self.current_textures = animation
