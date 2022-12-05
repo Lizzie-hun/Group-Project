@@ -103,7 +103,7 @@ class Director(arcade.Window):
             gate_sprite.center_y = 40
 
             self.gate_list.append(gate_sprite)
-
+        
         # Physics Engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
