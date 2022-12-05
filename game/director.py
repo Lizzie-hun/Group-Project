@@ -23,7 +23,8 @@ class Director(arcade.Window):
         self.player_previous_y = 0
         self.player_speed = globals.MOVEMENT_SPEED
         self.sprint_cooldown = 0
-
+        self.movingLeft = False
+        self.movingRight = False
         # What direction the player is supposed to face
         self.facing_right = True
 
@@ -186,21 +187,20 @@ class Director(arcade.Window):
             self.player.change_y = -self.player_speed
 
         elif key == arcade.key.LEFT:
-            self.player.change_x = -self.player_speed
+            self.movingRight = False
+            self.movingLeft = True
+            # self.player.change_x = -self.player_speed
 
         elif key == arcade.key.RIGHT:
-            self.player.change_x = self.player_speed
+            self.movingLeft = False
+            self.movingRight = True
+            # self.player.change_x = self.player_speed
 
     def on_key_release(self, key, modifiers):
-
-        if key == arcade.key.UP or key == arcade.key.DOWN:
-            KEY_UP = False
-            self.player.change_y = 0
-
-        if key == arcade.key.UP:
-            self.player.change_y = 0
-        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player.change_x = 0
+        if key == arcade.key.LEFT:
+            self.movingLeft = False
+        elif key == arcade.key.RIGHT:
+            self.movingRight = False
 
         # See player class for animation states
         self.player.switch_animation(0)
@@ -214,6 +214,19 @@ class Director(arcade.Window):
         
         # Move the player
         self.player_list.update()
+
+        if self.movingLeft:
+            self.player.change_x = -self.player_speed
+            print("moving left")
+        if self.movingRight:
+            self.player.change_x = self.player_speed
+        if not self.movingRight and not self.movingLeft:
+            self.player.change_x = 0
+        
+
+
+
+
 
         # Camera Moving
         self.center_camera_to_player()
