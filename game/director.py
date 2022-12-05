@@ -123,18 +123,6 @@ class Director(arcade.Window):
         # self.wall_list.append(wall)
         #-------Remove this-----------
 
-        # The level the gates and their sprites.
-        self.level = Level(1)
-        self.level.create_gates()
-        for gate in self.level.get_gates():
-            print(gate.get_gate())
-            gate_sprite = arcade.Sprite("assets/dino_blue/sprint/blue_sprint_00.png", 1)
-
-            gate_sprite.center_x = 30
-            gate_sprite.center_y = 40
-
-            self.gate_list.append(gate_sprite)
-
         # Physics Engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
@@ -291,7 +279,6 @@ class Director(arcade.Window):
                 self.mapId+=1
             except:
                 game_over()
-                break
             self.setup()
 
 
