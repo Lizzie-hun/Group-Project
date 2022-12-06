@@ -8,6 +8,7 @@ import random
 from gameOver import GameOverView
 
 
+
 class Director(arcade.View):
 
     def __init__(self):
@@ -30,7 +31,6 @@ class Director(arcade.View):
 
         self.player = None
         self.player_sprite = None
-        self.playerNumber = arcade.load_texture("assets/numbers/2.png")
 
         self.player_list = None
         self.gate_list = None
@@ -91,15 +91,15 @@ class Director(arcade.View):
         with open(f'Map/map{self.mapId}.tmj', "r") as map1:
             mapData = json.load(map1)
             mapData = mapData['layers'][4]['data']
-            print(self.map.width*17)
+            # print(self.map.width*17)
             for i in range(self.map.width*17):
                 if mapData[i] != 0:
-                    print(f'[{i}] {mapData[i]}')
+                    # print(f'[{i}] {mapData[i]}')
                     y = i / 200
                     y = 14-y
                     x = i % 200
-                    print(x,y)
-                    gateLocations.append([x*32,y*32, random.randint(0, 9)])
+                    # print(x,y)
+                    gateLocations.append([x*32,y*32, random.randint(1, 9)])
         
         for gate in gateLocations:
             gateSprite = Gate(globals.SPRITE_SCALING/3, gate[2])
@@ -120,6 +120,9 @@ class Director(arcade.View):
         self.player.center_x = globals.SCREEN_WIDTH // 5
         self.player.center_y = globals.SCREEN_HEIGHT // 4
         self.scene.add_sprite("PlayerCharacter", self.player)
+        # Player number
+        self.playerNumber = arcade.load_texture(f'assets/numbers/{self.player.operand}.png')
+
 
         #--------Test Wall------------
         # wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
@@ -243,7 +246,7 @@ class Director(arcade.View):
 
         if self.movingLeft:
             self.player.change_x = -self.player_speed
-            print("moving left")
+            # print("moving left")
         if self.movingRight:
             self.player.change_x = self.player_speed
         if not self.movingRight and not self.movingLeft:
@@ -267,7 +270,7 @@ class Director(arcade.View):
             arcade.play_sound(self.sound_falling)
             self.setup()
 
-        print(self.player_speed)
+        # print(self.player_speed)
         if self.sprint_cooldown > 0:
             self.sprint_cooldown -= 1
         else:
@@ -289,12 +292,16 @@ class Director(arcade.View):
                         self.player_speed = globals.SPRINT_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
                         arcade.play_sound(self.sound_powerUp)
-                        self.player.operand += 1
+                        self.player.switch_operand()
+                        self.playerNumber = arcade.load_texture(f'assets/numbers/{self.player.operand}.png')
                         self.score += 1
-                    elif i.value % self.player.operand == 1:
+                        print("Correct answer")
+                    else:
                         self.player_speed = globals.SLOW_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
                         arcade.play_sound(self.sound_hurt)
+                        print("Wrong answer")
+
                     i.kill()
         
         if self.player.center_x > ((self.map.width*32) - (self.camera.viewport_width / 4)): 
