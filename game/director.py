@@ -244,11 +244,12 @@ class Director(arcade.View):
         # Move the player
         self.player_list.update()
 
+        # Delta time is around 0.016 to 0.017
         if self.movingLeft:
-            self.player.change_x = -self.player_speed
+            self.player.change_x = -self.player_speed * 50 * delta_time
             # print("moving left")
         if self.movingRight:
-            self.player.change_x = self.player_speed
+            self.player.change_x = self.player_speed * 50 * delta_time
         if not self.movingRight and not self.movingLeft:
             self.player.change_x = 0
 
@@ -309,8 +310,3 @@ class Director(arcade.View):
                 self.mapId+=1
                 self.setup()
             else: self.game_over()
-
-
-
-                
-
