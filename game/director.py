@@ -89,7 +89,7 @@ class Director(arcade.View):
         self.score_text = None
 
 
-        self.timer = 60
+        self.timer = 45
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
@@ -199,8 +199,8 @@ class Director(arcade.View):
             score_text,
             10,
             10,
-            arcade.csscolor.WHITE,
-            18,
+            arcade.csscolor.BLACK,
+            15,
         )
 
 
@@ -208,10 +208,10 @@ class Director(arcade.View):
         timer_text = f"Timer: {self.timer}"
         arcade.draw_text(
             timer_text,
-            712,
-            455,
-            arcade.csscolor.WHITE,
-            18
+            700,
+            460,
+            arcade.color.BLACK,
+            15
         )
 
         self.camera.use()
@@ -275,8 +275,6 @@ class Director(arcade.View):
         if not self.movingRight and not self.movingLeft:
             self.player.change_x = 0
         
-        self.timer -= delta_time
-        self.timer_text = f"Timer: {self.timer}"
 
         # Camera Moving
         self.center_camera_to_player()
@@ -338,6 +336,11 @@ class Director(arcade.View):
             else: self.game_over()
 
 
-
+        if self.timer > 0.0:
+            self.timer -= delta_time
+            self.timer = round(self.timer, 2)
+            self.timer_text = f"Timer: {self.timer}"
+        else:
+            self.game_over()
                 
 
