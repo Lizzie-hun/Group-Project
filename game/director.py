@@ -157,9 +157,10 @@ class Director(arcade.View):
         game_over = GameOverView(self, self.timer, self.total_score)
         arcade.get_window().show_view(game_over)
 
-        self.total_score = 0
-        self.timer = 45
+        self.movingRight = False
         self.setup()
+        self.timer = 45
+        self.total_score = 0
 
     # Camera centered on sprite
     def center_camera_to_player(self):
