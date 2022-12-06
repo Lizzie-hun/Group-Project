@@ -6,6 +6,7 @@ from gates import Gate
 from map import Map
 import json
 import random
+import time
 
 
 class Director(arcade.Window):
@@ -39,6 +40,9 @@ class Director(arcade.Window):
 
         self.score = 0
         self.score_text = None
+
+        self.timer = 0
+        self.timer_text = None
 
         self.scene = None
         self.map = None
@@ -75,6 +79,9 @@ class Director(arcade.Window):
         # Score stuff
         self.score = 0
         self.score_text = None
+
+
+        self.timer = 60
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
@@ -177,6 +184,18 @@ class Director(arcade.Window):
             arcade.csscolor.WHITE,
             18,
         )
+
+
+        # Draw our timer on the screen, scrolling it with the viewport
+        timer_text = f"Timer: {self.timer}"
+        arcade.draw_text(
+            timer_text,
+            712,
+            455,
+            arcade.csscolor.WHITE,
+            18
+        )
+
         self.camera.use()
 
         # Draw hitbox for player
@@ -237,10 +256,8 @@ class Director(arcade.Window):
         if not self.movingRight and not self.movingLeft:
             self.player.change_x = 0
         
-
-
-
-
+        self.timer -= delta_time
+        self.timer_text = f"Timer: {self.timer}"
 
         # Camera Moving
         self.center_camera_to_player()
@@ -273,7 +290,8 @@ class Director(arcade.Window):
 
         # Update the players animation
         self.player_list.update_animation()
-
+        
+        
         # Generate a list of all sprites that collided with the player.
         hit_list = arcade.check_for_collision_with_list(self.player, self.gate_list)
         if len(hit_list) != 0:
@@ -294,7 +312,4 @@ class Director(arcade.Window):
             except:
                 game_over()
             self.setup()
-
-
-                
 
