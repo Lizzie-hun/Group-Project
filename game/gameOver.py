@@ -19,11 +19,11 @@ class GameOverView(arcade.View):
         Draw "Game over" across the screen.
         """
         arcade.draw_text("Game Over", globals.SCREEN_WIDTH / 2, globals.SCREEN_HEIGHT / 2 + 50, arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Click to restart", globals.SCREEN_WIDTH / 2 - 90 , globals.SCREEN_HEIGHT/2 - 50, arcade.color.WHITE, 24)
+        arcade.draw_text("Click to restart", globals.SCREEN_WIDTH / 2 - 100 , globals.SCREEN_HEIGHT/2 - 50, arcade.color.WHITE, 24)
 
-        time_taken_formatted = f"{round(self.time_taken, 2)} seconds"
+        time_taken_formatted = f"{round(self.time_taken, 1)} seconds"
         arcade.draw_text(f"Time taken: {time_taken_formatted}",
-                         globals.SCREEN_WIDTH -100,
+                         globals.SCREEN_WIDTH -120,
                          10,
                          arcade.color.GRAY,
                          font_size=15,
