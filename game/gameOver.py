@@ -2,12 +2,11 @@ import arcade
 import globals
 
 class GameOverView(arcade.View):
-    """ View to show when game is over """
-
-    def __init__(self):
-        """ This is run once when we switch to this view """
+    def __init__(self, game):
         super().__init__()
-        self.texture = arcade.load_texture("assets/youWin.png")
+        self.Game_View = game
+        self.time_taken = 0
+        self.score = 0
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
@@ -16,11 +15,23 @@ class GameOverView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         self.clear()
-        self.texture.draw_sized(globals.SCREEN_WIDTH / 2, globals.SCREEN_HEIGHT / 2,
-                                globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT)
+        """
+        Draw "Game over" across the screen.
+        """
+        arcade.draw_text("Game Over", globals.SCREEN_WIDTH / 2, globals.SCREEN_HEIGHT / 2 + 50, arcade.color.WHITE, font_size=50, anchor_x="center")
+        arcade.draw_text("Click to restart", 310, 300, arcade.color.WHITE, 24)
 
-    # def on_mouse_press(self, _x, _y, _button, _modifiers):
-    #     """ If the user presses the mouse button, re-start the game. """
-    #     game_view = GameView()
-    #     game_view.setup()
-    #     self.window.show_view(game_view)
+        time_taken_formatted = f"{round(self.time_taken, 2)} seconds"
+        arcade.draw_text(f"Time taken: {time_taken_formatted}",
+                         globals.SCREEN_WIDTH / 2,
+                         200,
+                         arcade.color.GRAY,
+                         font_size=15,
+                         anchor_x="center")
+
+        output_total = f"Total Score: {self.score}"
+        arcade.draw_text(output_total, 10, 10, arcade.color.WHITE, 14)
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        game_view = self.Game_View
+        arcade.get_window().show_view(game_view)

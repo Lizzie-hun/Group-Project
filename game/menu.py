@@ -79,8 +79,10 @@ while run:
     else:
         main_menu = draw_game()
         if menu_command == 1:
-            window = Director(globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.SCREEN_TITLE)
-            window.setup()
+            window = arcade.Window(globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.SCREEN_TITLE)
+            start_game = Director()
+            window.show_view(start_game)
+            start_game.setup()
             arcade.run()
  
     for event in pygame.event.get():

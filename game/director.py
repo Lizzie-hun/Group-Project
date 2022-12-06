@@ -5,18 +5,19 @@ from gates import Gate
 from gameOver import GameOverView
 import json
 import random
+from gameOver import GameOverView
 
 
-class Director(arcade.Window):
+class Director(arcade.View):
 
-    def __init__(self, width, height, title):
+    def __init__(self):
 
         # Call the parent class's init function
-        super().__init__(width, height, title)
+        super().__init__()
 
         # Make the mouse disappear when it is over the window.
         # So we just see our object, not the pointer.
-        self.set_mouse_visible(False)
+        self.window.set_mouse_visible(False)
 
         # This allows us to calculate player y movement
         self.player_previous_y = 0
@@ -47,6 +48,8 @@ class Director(arcade.Window):
         self.camera = None
         # HUD camera
         self.gui_camera = None
+        self.width = globals.SCREEN_WIDTH
+        self.height = globals.SCREEN_HEIGHT
 
         # Load sounds 
         self.sound_falling = arcade.load_sound("assets/sounds/falling.wav")
@@ -56,7 +59,7 @@ class Director(arcade.Window):
         # Playing the sound here at the start at 0 volume prevents the lag when the player first jumps
         arcade.play_sound(self.sound_jump, 0)
 
-        arcade.set_background_color(arcade.color.ASH_GREY)
+        # arcade.set_background_color(arcade.color.ASH_GREY)
 
     def setup(self):
         #-------------------------
@@ -132,9 +135,16 @@ class Director(arcade.Window):
             gravity_constant=globals.GRAVITY,
             walls=self.scene[globals.LAYER_NAME_FLOOR],
         )
-        arcade.set_background_color(arcade.color.ASH_GREY) 
+        arcade.set_background_color(arcade.color.BLACK) 
 
-    
+    def game_over(self):
+        self.mapId = 1
+        game_over = GameOverView(self)
+        arcade.get_window().show_view(game_over)
+        self.setup()
+        # game_over_view = GameOverView()
+        # arcade.Window.show_view(self, game_over_view)
+
     # Camera centered on sprite
     def center_camera_to_player(self):
         # print(f"width: {self.map.width}")
@@ -159,7 +169,7 @@ class Director(arcade.Window):
 
         # Clear the screen and start next frame render
         self.clear()
-        arcade.start_render()
+        # arcade.start_render()
 
         # Filter is so the image isn't blurry
         # self.player_list.draw(filter=arcade.gl.NEAREST)
@@ -255,7 +265,6 @@ class Director(arcade.Window):
 
         if self.player.center_y < 0:
             arcade.play_sound(self.sound_falling)
-            self.player.kill()
             self.setup()
 
         print(self.player_speed)
@@ -288,14 +297,12 @@ class Director(arcade.Window):
                         arcade.play_sound(self.sound_hurt)
                     i.kill()
         
-            if self.player.center_x > ((self.map.width*32) - (self.camera.viewport_width / 4)): 
-                    try:
-                        self.mapId+=1
-                        print(self.mapId)
-                        self.setup()
-                    except:
-                        self.gameOver = GameOverView()
-                        self.window.show_view(self.gameOver)
+        if self.player.center_x > ((self.map.width*32) - (self.camera.viewport_width / 4)): 
+            if self.mapId < 2:
+                self.mapId+=1
+                self.setup()
+            else: self.game_over()
+
 
 
                 
