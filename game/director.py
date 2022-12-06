@@ -152,7 +152,7 @@ class Director(arcade.View):
 
     def game_over(self):
         self.mapId = 1
-        game_over = GameOverView(self)
+        game_over = GameOverView(self, self.timer, self.score)
         arcade.get_window().show_view(game_over)
         self.setup()
         # game_over_view = GameOverView()
