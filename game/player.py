@@ -1,5 +1,6 @@
 import arcade
 import globals
+import random
 
 def load_texture_pair(filename):
     """Load a texture pair, with the second being a mirror image."""
@@ -52,6 +53,8 @@ class PlayerCharacter(arcade.Sprite):
         self.jumping_textures.append(up)
         self.jumping_textures.append(down)
 
+    def set_speed(self, speed):
+        self.speed = speed
 
     def switch_animation(self, animation):
         self.current_textures = animation
@@ -95,5 +98,7 @@ class PlayerCharacter(arcade.Sprite):
         else:
             return False
     
-    def reset_operand(self):
-        self.operand = 2
+    def switch_operand(self):
+        self.operand = 3
+
+    

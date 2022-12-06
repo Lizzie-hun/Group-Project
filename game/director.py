@@ -1,24 +1,25 @@
 import arcade
 import globals
-from level import Level
 from player import PlayerCharacter
 from gates import Gate
-from map import Map
+from gameOver import GameOverView
 import json
 import random
+from gameOver import GameOverView
+
 import time
 
 
-class Director(arcade.Window):
+class Director(arcade.View):
 
-    def __init__(self, width, height, title):
+    def __init__(self):
 
         # Call the parent class's init function
-        super().__init__(width, height, title)
+        super().__init__()
 
         # Make the mouse disappear when it is over the window.
         # So we just see our object, not the pointer.
-        self.set_mouse_visible(False)
+        self.window.set_mouse_visible(False)
 
         # This allows us to calculate player y movement
         self.player_previous_y = 0
@@ -31,7 +32,6 @@ class Director(arcade.Window):
 
         self.player = None
         self.player_sprite = None
-        self.playerNumber = arcade.load_texture("assets/numbers/2.png")
 
         self.player_list = None
         self.gate_list = None
@@ -40,25 +40,33 @@ class Director(arcade.Window):
 
         self.score = 0
         self.score_text = None
+        self.gameOver = None
+
+        self.timer = 0
+        self.timer_text = None
 
         self.timer = 0
         self.timer_text = None
 
         self.scene = None
         self.map = None
-        self.mapId = 1
+        self.mapId = 2
 
         self.camera = None
         # HUD camera
         self.gui_camera = None
+        self.width = globals.SCREEN_WIDTH
+        self.height = globals.SCREEN_HEIGHT
 
         # Load sounds 
         self.sound_falling = arcade.load_sound("assets/sounds/falling.wav")
         self.sound_jump = arcade.load_sound("assets/sounds/jump.wav")
+        self.sound_powerUp = arcade.load_sound("assets/sounds/powerUp.wav")
+        self.sound_hurt = arcade.load_sound("assets/sounds/hurt.wav")
         # Playing the sound here at the start at 0 volume prevents the lag when the player first jumps
         arcade.play_sound(self.sound_jump, 0)
 
-        arcade.set_background_color(arcade.color.ASH_GREY)
+        # arcade.set_background_color(arcade.color.ASH_GREY)
 
     def setup(self):
         #-------------------------
@@ -93,18 +101,18 @@ class Director(arcade.Window):
         with open(f'Map/map{self.mapId}.tmj', "r") as map1:
             mapData = json.load(map1)
             mapData = mapData['layers'][4]['data']
-            print(self.map.width*17)
+            # print(self.map.width*17)
             for i in range(self.map.width*17):
                 if mapData[i] != 0:
-                    print(f'[{i}] {mapData[i]}')
+                    # print(f'[{i}] {mapData[i]}')
                     y = i / 200
                     y = 14-y
                     x = i % 200
-                    print(x,y)
-                    gateLocations.append([x*32,y*32, random.randint(0, 9)])
+                    # print(x,y)
+                    gateLocations.append([x*32,y*32, random.randint(1, 9)])
         
         for gate in gateLocations:
-            gateSprite = Gate(f'assets/numbers/{gate[2]}.png', globals.SPRITE_SCALING/3, gate[2])
+            gateSprite = Gate(globals.SPRITE_SCALING/3, gate[2])
             gateSprite.center_x = gate[0] + 20
             gateSprite.center_y = gate[1] + 90
             self.gate_list.append(gateSprite)
@@ -122,6 +130,9 @@ class Director(arcade.Window):
         self.player.center_x = globals.SCREEN_WIDTH // 5
         self.player.center_y = globals.SCREEN_HEIGHT // 4
         self.scene.add_sprite("PlayerCharacter", self.player)
+        # Player number
+        self.playerNumber = arcade.load_texture(f'assets/numbers/{self.player.operand}.png')
+
 
         #--------Test Wall------------
         # wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
@@ -137,9 +148,16 @@ class Director(arcade.Window):
             gravity_constant=globals.GRAVITY,
             walls=self.scene[globals.LAYER_NAME_FLOOR],
         )
-        arcade.set_background_color(arcade.color.ASH_GREY) 
+        arcade.set_background_color(arcade.color.BLACK) 
 
-    
+    def game_over(self):
+        self.mapId = 1
+        game_over = GameOverView(self)
+        arcade.get_window().show_view(game_over)
+        self.setup()
+        # game_over_view = GameOverView()
+        # arcade.Window.show_view(self, game_over_view)
+
     # Camera centered on sprite
     def center_camera_to_player(self):
         # print(f"width: {self.map.width}")
@@ -164,7 +182,7 @@ class Director(arcade.Window):
 
         # Clear the screen and start next frame render
         self.clear()
-        arcade.start_render()
+        # arcade.start_render()
 
         # Filter is so the image isn't blurry
         # self.player_list.draw(filter=arcade.gl.NEAREST)
@@ -250,7 +268,7 @@ class Director(arcade.Window):
 
         if self.movingLeft:
             self.player.change_x = -self.player_speed
-            print("moving left")
+            # print("moving left")
         if self.movingRight:
             self.player.change_x = self.player_speed
         if not self.movingRight and not self.movingLeft:
@@ -275,10 +293,9 @@ class Director(arcade.Window):
 
         if self.player.center_y < 0:
             arcade.play_sound(self.sound_falling)
-            self.player.kill()
             self.setup()
 
-        print(self.player_speed)
+        # print(self.player_speed)
         if self.sprint_cooldown > 0:
             self.sprint_cooldown -= 1
         else:
@@ -300,16 +317,25 @@ class Director(arcade.Window):
                     if i.value % self.player.operand == 0:
                         self.player_speed = globals.SPRINT_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
+                        arcade.play_sound(self.sound_powerUp)
+                        self.player.switch_operand()
+                        self.playerNumber = arcade.load_texture(f'assets/numbers/{self.player.operand}.png')
                         self.score += 1
-                    elif i.value % self.player.operand == 1:
+                        print("Correct answer")
+                    else:
                         self.player_speed = globals.SLOW_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
+                        arcade.play_sound(self.sound_hurt)
+                        print("Wrong answer")
+
                     i.kill()
         
         if self.player.center_x > ((self.map.width*32) - (self.camera.viewport_width / 4)): 
-            try:
+            if self.mapId < 2:
                 self.mapId+=1
-            except:
-                game_over()
-            self.setup()
+                self.setup()
+            else: self.game_over()
 
+
+
+                
