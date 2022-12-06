@@ -40,9 +40,11 @@ class Director(arcade.View):
 
         self.score = 0
         self.score_text = None
+        self.total_score = 0
+
         self.gameOver = None
 
-        self.timer = 0
+        self.timer = 45
         self.timer_text = None
 
         self.timer = 0
@@ -89,7 +91,7 @@ class Director(arcade.View):
         self.score_text = None
 
 
-        self.timer = 45
+        self.timer += 30
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
@@ -152,11 +154,12 @@ class Director(arcade.View):
 
     def game_over(self):
         self.mapId = 1
-        game_over = GameOverView(self, self.timer, self.score)
+        game_over = GameOverView(self, self.timer, self.total_score)
         arcade.get_window().show_view(game_over)
+
+        self.total_score = 0
+        self.timer = 45
         self.setup()
-        # game_over_view = GameOverView()
-        # arcade.Window.show_view(self, game_over_view)
 
     # Camera centered on sprite
     def center_camera_to_player(self):
@@ -292,7 +295,7 @@ class Director(arcade.View):
 
         if self.player.center_y < 0:
             arcade.play_sound(self.sound_falling)
-            self.setup()
+            self.game_over()
 
         # print(self.player_speed)
         if self.sprint_cooldown > 0:
@@ -320,6 +323,7 @@ class Director(arcade.View):
                         self.player.switch_operand()
                         self.playerNumber = arcade.load_texture(f'assets/numbers/{self.player.operand}.png')
                         self.score += 1
+                        self.total_score += 1
                         print("Correct answer")
                     else:
                         self.player_speed = globals.SLOW_SPEED

@@ -32,6 +32,6 @@ class GameOverView(arcade.View):
         output_total = f"Total Score: {self.score}"
         arcade.draw_text(output_total, 10, 10, arcade.color.WHITE, 14)
 
-    # def on_mouse_press(self, _x, _y, _button, _modifiers):
-    #     self.mapId
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        arcade.get_window().show_view(self.Game_View)
         
