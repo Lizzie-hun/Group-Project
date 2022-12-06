@@ -1,6 +1,5 @@
 import arcade
 import globals
-from level import Level
 from player import PlayerCharacter
 from gates import Gate
 from map import Map
@@ -134,7 +133,11 @@ class Director(arcade.Window):
         )
         arcade.set_background_color(arcade.color.ASH_GREY) 
 
-    
+    def game_over(self):
+        arcade.close_window()
+        window = Director(globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.SCREEN_TITLE)
+        # window.setup()
+
     # Camera centered on sprite
     def center_camera_to_player(self):
         # print(f"width: {self.map.width}")
@@ -233,7 +236,6 @@ class Director(arcade.Window):
 
         if self.movingLeft:
             self.player.change_x = -self.player_speed
-            print("moving left")
         if self.movingRight:
             self.player.change_x = self.player_speed
         if not self.movingRight and not self.movingLeft:
@@ -255,8 +257,7 @@ class Director(arcade.Window):
 
         if self.player.center_y < 0:
             arcade.play_sound(self.sound_falling)
-            self.player.kill()
-            self.setup()
+            self.game_over()
 
         print(self.player_speed)
         if self.sprint_cooldown > 0:
@@ -291,9 +292,10 @@ class Director(arcade.Window):
         if self.player.center_x > ((self.map.width*32) - (self.camera.viewport_width / 4)): 
             try:
                 self.mapId+=1
+                print(self.mapId)
+                self.setup()
             except:
-                game_over()
-            self.setup()
+                self.game_over()
 
 
                 

@@ -1,7 +1,6 @@
 import arcade
 from director import Director
 import globals
-from level import Level
 
 def main():
     """ Main function """
