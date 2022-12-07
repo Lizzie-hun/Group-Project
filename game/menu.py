@@ -12,7 +12,7 @@ HEIGHT = 500
 fps = 60
 timer = pygame.time.Clock()
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
-pygame.display.set_caption('Menus Tutorial')
+pygame.display.set_caption('Dino Run Menu')
 main_menu = False
 font = pygame.font.Font('freesansbold.ttf', 24)
 menu_command = 0
