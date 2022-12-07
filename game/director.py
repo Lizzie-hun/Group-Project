@@ -68,7 +68,7 @@ class Director(arcade.View):
 
         # arcade.set_background_color(arcade.color.ASH_GREY)
 
-    def setup(self):
+    def setup(self, dino_color):
         #-------------------------
         # Map stuff - Sully
         # Set up the Cameras
@@ -122,7 +122,7 @@ class Director(arcade.View):
         #------remove this-----
 
         # Player
-        self.player = PlayerCharacter("red") # Pass color in here (red, yellow, green, blue)
+        self.player = PlayerCharacter(dino_color) # Pass color in here (red, yellow, green, blue)
         self.player_list.append(self.player)
         # Player scaling
         self.player.scale = globals.SPRITE_SCALING_PLAYER
