@@ -64,8 +64,10 @@ class Director(arcade.View):
         self.sound_jump = arcade.load_sound("assets/sounds/jump.wav")
         self.sound_powerUp = arcade.load_sound("assets/sounds/powerUp.wav")
         self.sound_hurt = arcade.load_sound("assets/sounds/hurt.wav")
+        self.music = arcade.load_sound("assets/sounds/music.wav")
         # Playing the sound here at the start at 0 volume prevents the lag when the player first jumps
         arcade.play_sound(self.sound_jump, 0)
+        arcade.play_sound(self.music, 1)
 
         # arcade.set_background_color(arcade.color.ASH_GREY)
 
