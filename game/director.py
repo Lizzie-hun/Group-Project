@@ -152,6 +152,8 @@ class Director(arcade.View):
 
     def game_over(self):
         self.mapId = 1
+        self.player.kill()
+        self.clear()
         game_over = GameOverView(self, self.timer, self.total_score)
         arcade.get_window().show_view(game_over)
 
@@ -360,5 +362,8 @@ class Director(arcade.View):
             self.timer_text = f"Timer: {self.timer}"
         else:
             self.game_over()
+
+
+
                 
 

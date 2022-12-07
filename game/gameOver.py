@@ -33,5 +33,5 @@ class GameOverView(arcade.View):
         arcade.draw_text(output_total, 10, 10, arcade.color.WHITE, 14)
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
-        print("Game Over")
+        arcade.get_window().show_view(self.Game_View)
         
