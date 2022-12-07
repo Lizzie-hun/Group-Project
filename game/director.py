@@ -7,9 +7,6 @@ import json
 import random
 from gameOver import GameOverView
 
-import time
-
-
 class Director(arcade.View):
 
     def __init__(self):
@@ -32,6 +29,7 @@ class Director(arcade.View):
 
         self.player = None
         self.player_sprite = None
+        self.player_sprinting = False
 
         self.player_list = None
         self.gate_list = None
@@ -124,7 +122,7 @@ class Director(arcade.View):
         #------remove this-----
 
         # Player
-        self.player = PlayerCharacter()
+        self.player = PlayerCharacter("red") # Pass color in here (red, yellow, green, blue)
         self.player_list.append(self.player)
         # Player scaling
         self.player.scale = globals.SPRITE_SCALING_PLAYER
@@ -158,6 +156,7 @@ class Director(arcade.View):
         arcade.get_window().show_view(game_over)
 
         self.movingRight = False
+        self.movingLeft = False
         self.setup()
         self.timer = 45
         self.total_score = 0
@@ -179,7 +178,6 @@ class Director(arcade.View):
 
             self.camera.move_to(player_centered)
         
-
 
     def on_draw(self):
         """ Called whenever we need to draw the window. """
@@ -227,7 +225,6 @@ class Director(arcade.View):
         self.playerNumber.draw_scaled(self.player.center_x, self.player.center_y + 50, .1)
 
 
-
     def on_key_press(self, key, modifiers):
         """ Called whenever the user presses a key. """
 
@@ -244,11 +241,19 @@ class Director(arcade.View):
         elif key == arcade.key.LEFT:
             self.movingRight = False
             self.movingLeft = True
+            if self.sprint_cooldown > 0:
+                self.player.switch_animation(4) # Sprint animation
+            else:
+                self.player.switch_animation(1)
             # self.player.change_x = -self.player_speed
 
         elif key == arcade.key.RIGHT:
             self.movingLeft = False
             self.movingRight = True
+            if self.sprint_cooldown > 0:
+                self.player.switch_animation(4) # Sprint animation
+            else:
+                self.player.switch_animation(1)
             # self.player.change_x = self.player_speed
 
     def on_key_release(self, key, modifiers):
@@ -303,10 +308,17 @@ class Director(arcade.View):
             self.sprint_cooldown -= 1
         else:
             self.player_speed = globals.MOVEMENT_SPEED
+            self.player_sprinting = False
 
         # Track movement velocity. There is a built in way to do this 
         # but this is simple homemade code
         self.player_previous_y = self.player.center_y
+
+        if self.player.change_x != 0: # If the player is not standing still
+            if self.sprint_cooldown > 0 and self.player_sprinting:
+                self.player.switch_animation(4)
+            else:
+                self.player.switch_animation(1)
 
         # Update the players animation
         self.player_list.update_animation()
@@ -322,6 +334,7 @@ class Director(arcade.View):
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
                         arcade.play_sound(self.sound_powerUp)
                         self.player.switch_operand()
+                        self.player_sprinting = True
                         self.playerNumber = arcade.load_texture(f'assets/numbers/{self.player.operand}.png')
                         self.score += 1
                         self.total_score += 1
