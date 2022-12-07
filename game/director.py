@@ -9,7 +9,7 @@ from gameOver import GameOverView
 
 class Director(arcade.View):
 
-    def __init__(self):
+    def __init__(self, dino_color):
 
         # Call the parent class's init function
         super().__init__()
@@ -30,6 +30,7 @@ class Director(arcade.View):
         self.player = None
         self.player_sprite = None
         self.player_sprinting = False
+        self.dino_color = dino_color
 
         self.player_list = None
         self.gate_list = None
@@ -68,7 +69,7 @@ class Director(arcade.View):
 
         # arcade.set_background_color(arcade.color.ASH_GREY)
 
-    def setup(self, dino_color):
+    def setup(self):
         #-------------------------
         # Map stuff - Sully
         # Set up the Cameras
@@ -122,7 +123,7 @@ class Director(arcade.View):
         #------remove this-----
 
         # Player
-        self.player = PlayerCharacter(dino_color) # Pass color in here (red, yellow, green, blue)
+        self.player = PlayerCharacter(self.dino_color) # Pass color in here (red, yellow, green, blue)
         self.player_list.append(self.player)
         # Player scaling
         self.player.scale = globals.SPRITE_SCALING_PLAYER
