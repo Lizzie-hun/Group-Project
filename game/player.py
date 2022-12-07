@@ -1,5 +1,6 @@
 import arcade
 import globals
+import random
 
 def load_texture_pair(filename):
     """Load a texture pair, with the second being a mirror image."""
@@ -9,7 +10,7 @@ def load_texture_pair(filename):
     ]
 
 class PlayerCharacter(arcade.Sprite):
-    def __init__(self):
+    def __init__(self, color):
         # Set up parent class
         super().__init__()
 
@@ -18,9 +19,18 @@ class PlayerCharacter(arcade.Sprite):
         # or sprite[1] for right facing
         self.facing_left = 1
 
+        # 'color' string parameter somehow turns into a tuple eg: ('r', 'e', 'd')
+        # this chunk of code slaps a bandaid on it
+        self.dino_color = ''
+        for letter in color:
+            self.dino_color = self.dino_color + letter
+        print(self.dino_color)
+        self.dino_color = color
+
         # Used for flipping between image sequences
         self.cur_walk_texture = 0
         self.cur_idle_texture = 0
+        self.cur_sprint_texture = 0
         self.scale = globals.CHARACTER_SCALING
         self.current_textures = 0
         # Adjust the collision box. Default includes too much empty space
@@ -31,28 +41,35 @@ class PlayerCharacter(arcade.Sprite):
         self.operand = 2
 
         # --- Load Textures ---
-        main_path = "assets/dino_blue/"
+        main_path = f'assets/dinos/{self.dino_color}/'
 
         # Load textures for idle standing
         self.idle_textures = []
-        for i in range(3):
+        for i in range(4):
             texture = load_texture_pair(f"{main_path}idle/tile00{i}.png")
             self.idle_textures.append(texture)
 
         # Load textures for walking
         self.walk_textures = []
-        for i in range(3,10):
+        for i in range(4,10):
             texture = load_texture_pair(f"{main_path}run/tile00{i}.png")
             self.walk_textures.append(texture)
+
+        # Load textures for sprinting
+        self.sprinting_textures = []
+        for i in range(17,24):
+            texture = load_texture_pair(f"{main_path}sprint/tile0{i}.png")
+            self.sprinting_textures.append(texture)
 
         # Load textures for jumping
         self.jumping_textures = []
         up = load_texture_pair(f"{main_path}jump/tile012.png")
-        down = load_texture_pair(f"{main_path}run/tile007.png")
+        down = load_texture_pair(f"{main_path}jump/tile007.png")
         self.jumping_textures.append(up)
         self.jumping_textures.append(down)
 
-    def set_speed(speed):
+
+    def set_speed(self, speed):
         self.speed = speed
 
     def switch_animation(self, animation):
@@ -68,7 +85,7 @@ class PlayerCharacter(arcade.Sprite):
         if self.current_textures == 0:
             # Idle animation
             self.cur_idle_texture += 1
-            if self.cur_idle_texture > 2.9 * globals.IDLE_UPDATES_PER_FRAME:
+            if self.cur_idle_texture > 3.9 * globals.IDLE_UPDATES_PER_FRAME:
                 self.cur_idle_texture = 0
             frame = self.cur_idle_texture // globals.IDLE_UPDATES_PER_FRAME
             direction = not self.facing_left
@@ -77,7 +94,7 @@ class PlayerCharacter(arcade.Sprite):
         elif self.current_textures == 1:
             # Walking animation
             self.cur_walk_texture += 1
-            if self.cur_walk_texture > 6.9 * globals.UPDATES_PER_FRAME:
+            if self.cur_walk_texture > 5.9 * globals.UPDATES_PER_FRAME:
                 self.cur_walk_texture = 0
             frame = self.cur_walk_texture // globals.UPDATES_PER_FRAME
             direction = not self.facing_left
@@ -90,6 +107,16 @@ class PlayerCharacter(arcade.Sprite):
             direction = not self.facing_left
             self.texture = self.jumping_textures[1][direction]
 
+        elif self.current_textures == 4:
+            # Sprinting animation
+            self.cur_sprint_texture += 1
+            if self.cur_sprint_texture > 6.9 * globals.UPDATES_PER_FRAME:
+                self.cur_sprint_texture = 0
+            frame = self.cur_sprint_texture // globals.UPDATES_PER_FRAME
+            direction = not self.facing_left
+            self.texture = self.sprinting_textures[frame][direction]
+            
+
     def is_divisible(self, value):
         if self.operand % value == 0:
             self.operand += 1
@@ -97,5 +124,7 @@ class PlayerCharacter(arcade.Sprite):
         else:
             return False
     
-    def reset_operand(self):
-        self.operand = 2
+    def switch_operand(self):
+        self.operand = 3
+
+    

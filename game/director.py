@@ -1,23 +1,22 @@
 import arcade
 import globals
-from level import Level
 from player import PlayerCharacter
 from gates import Gate
-from map import Map
+from gameOver import GameOverView
 import json
 import random
+from gameOver import GameOverView
 
+class Director(arcade.View):
 
-class Director(arcade.Window):
-
-    def __init__(self, width, height, title):
+    def __init__(self):
 
         # Call the parent class's init function
-        super().__init__(width, height, title)
+        super().__init__()
 
         # Make the mouse disappear when it is over the window.
         # So we just see our object, not the pointer.
-        self.set_mouse_visible(False)
+        self.window.set_mouse_visible(False)
 
         # This allows us to calculate player y movement
         self.player_previous_y = 0
@@ -30,7 +29,7 @@ class Director(arcade.Window):
 
         self.player = None
         self.player_sprite = None
-        self.playerNumber = arcade.load_texture("assets/numbers/2.png")
+        self.player_sprinting = False
 
         self.player_list = None
         self.gate_list = None
@@ -39,14 +38,25 @@ class Director(arcade.Window):
 
         self.score = 0
         self.score_text = None
+        self.total_score = 0
+
+        self.gameOver = None
+
+        self.timer = 45
+        self.timer_text = None
+
+        self.timer = 0
+        self.timer_text = None
 
         self.scene = None
         self.map = None
-        self.mapId = 1
+        self.mapId = 2
 
         self.camera = None
         # HUD camera
         self.gui_camera = None
+        self.width = globals.SCREEN_WIDTH
+        self.height = globals.SCREEN_HEIGHT
 
         # Load sounds 
         self.sound_falling = arcade.load_sound("assets/sounds/falling.wav")
@@ -56,9 +66,9 @@ class Director(arcade.Window):
         # Playing the sound here at the start at 0 volume prevents the lag when the player first jumps
         arcade.play_sound(self.sound_jump, 0)
 
-        arcade.set_background_color(arcade.color.ASH_GREY)
+        # arcade.set_background_color(arcade.color.ASH_GREY)
 
-    def setup(self):
+    def setup(self, dino_color):
         #-------------------------
         # Map stuff - Sully
         # Set up the Cameras
@@ -78,6 +88,9 @@ class Director(arcade.Window):
         self.score = 0
         self.score_text = None
 
+
+        self.timer += 30
+
         # Sprite lists
         self.player_list = arcade.SpriteList()
         self.gate_list = arcade.SpriteList()
@@ -88,15 +101,15 @@ class Director(arcade.Window):
         with open(f'Map/map{self.mapId}.tmj', "r") as map1:
             mapData = json.load(map1)
             mapData = mapData['layers'][4]['data']
-            print(self.map.width*17)
+            # print(self.map.width*17)
             for i in range(self.map.width*17):
                 if mapData[i] != 0:
-                    print(f'[{i}] {mapData[i]}')
+                    # print(f'[{i}] {mapData[i]}')
                     y = i / 200
                     y = 14-y
                     x = i % 200
-                    print(x,y)
-                    gateLocations.append([x*32,y*32, random.randint(0, 9)])
+                    # print(x,y)
+                    gateLocations.append([x*32,y*32, random.randint(1, 9)])
         
         for gate in gateLocations:
             gateSprite = Gate(globals.SPRITE_SCALING/3, gate[2])
@@ -109,7 +122,7 @@ class Director(arcade.Window):
         #------remove this-----
 
         # Player
-        self.player = PlayerCharacter()
+        self.player = PlayerCharacter(dino_color) # Pass color in here (red, yellow, green, blue)
         self.player_list.append(self.player)
         # Player scaling
         self.player.scale = globals.SPRITE_SCALING_PLAYER
@@ -117,6 +130,9 @@ class Director(arcade.Window):
         self.player.center_x = globals.SCREEN_WIDTH // 5
         self.player.center_y = globals.SCREEN_HEIGHT // 4
         self.scene.add_sprite("PlayerCharacter", self.player)
+        # Player number
+        self.playerNumber = arcade.load_texture(f'assets/numbers/{self.player.operand}.png')
+
 
         #--------Test Wall------------
         # wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
@@ -132,9 +148,21 @@ class Director(arcade.Window):
             gravity_constant=globals.GRAVITY,
             walls=self.scene[globals.LAYER_NAME_FLOOR],
         )
-        arcade.set_background_color(arcade.color.ASH_GREY) 
+        arcade.set_background_color(arcade.color.BLACK) 
 
-    
+    def game_over(self):
+        self.mapId = 1
+        self.player.kill()
+        self.clear()
+        game_over = GameOverView(self, self.timer, self.total_score)
+        arcade.get_window().show_view(game_over)
+
+        self.movingRight = False
+        self.movingLeft = False
+        self.setup()
+        self.timer = 45
+        self.total_score = 0
+
     # Camera centered on sprite
     def center_camera_to_player(self):
         # print(f"width: {self.map.width}")
@@ -153,13 +181,12 @@ class Director(arcade.Window):
             self.camera.move_to(player_centered)
         
 
-
     def on_draw(self):
         """ Called whenever we need to draw the window. """
 
         # Clear the screen and start next frame render
         self.clear()
-        arcade.start_render()
+        # arcade.start_render()
 
         # Filter is so the image isn't blurry
         # self.player_list.draw(filter=arcade.gl.NEAREST)
@@ -176,9 +203,21 @@ class Director(arcade.Window):
             score_text,
             10,
             10,
-            arcade.csscolor.WHITE,
-            18,
+            arcade.csscolor.BLACK,
+            15,
         )
+
+
+        # Draw our timer on the screen, scrolling it with the viewport
+        timer_text = f"Timer: {self.timer}"
+        arcade.draw_text(
+            timer_text,
+            700,
+            460,
+            arcade.color.BLACK,
+            15
+        )
+
         self.camera.use()
 
         # Draw hitbox for player
@@ -186,7 +225,6 @@ class Director(arcade.Window):
 
         # Draw the number above the player
         self.playerNumber.draw_scaled(self.player.center_x, self.player.center_y + 50, .1)
-
 
 
     def on_key_press(self, key, modifiers):
@@ -205,11 +243,19 @@ class Director(arcade.Window):
         elif key == arcade.key.LEFT:
             self.movingRight = False
             self.movingLeft = True
+            if self.sprint_cooldown > 0:
+                self.player.switch_animation(4) # Sprint animation
+            else:
+                self.player.switch_animation(1)
             # self.player.change_x = -self.player_speed
 
         elif key == arcade.key.RIGHT:
             self.movingLeft = False
             self.movingRight = True
+            if self.sprint_cooldown > 0:
+                self.player.switch_animation(4) # Sprint animation
+            else:
+                self.player.switch_animation(1)
             # self.player.change_x = self.player_speed
 
     def on_key_release(self, key, modifiers):
@@ -231,13 +277,15 @@ class Director(arcade.Window):
         # Move the player
         self.player_list.update()
 
+        # Delta time is around 0.016 to 0.017
         if self.movingLeft:
-            self.player.change_x = -self.player_speed
-            print("moving left")
+            self.player.change_x = -self.player_speed * 50 * delta_time
+            # print("moving left")
         if self.movingRight:
-            self.player.change_x = self.player_speed
+            self.player.change_x = self.player_speed * 50 * delta_time
         if not self.movingRight and not self.movingLeft:
             self.player.change_x = 0
+        
 
         # Camera Moving
         self.center_camera_to_player()
@@ -255,22 +303,29 @@ class Director(arcade.Window):
 
         if self.player.center_y < 0:
             arcade.play_sound(self.sound_falling)
-            self.player.kill()
-            self.setup()
+            self.game_over()
 
-        print(self.player_speed)
+        # print(self.player_speed)
         if self.sprint_cooldown > 0:
             self.sprint_cooldown -= 1
         else:
             self.player_speed = globals.MOVEMENT_SPEED
+            self.player_sprinting = False
 
         # Track movement velocity. There is a built in way to do this 
         # but this is simple homemade code
         self.player_previous_y = self.player.center_y
 
+        if self.player.change_x != 0: # If the player is not standing still
+            if self.sprint_cooldown > 0 and self.player_sprinting:
+                self.player.switch_animation(4)
+            else:
+                self.player.switch_animation(1)
+
         # Update the players animation
         self.player_list.update_animation()
-
+        
+        
         # Generate a list of all sprites that collided with the player.
         hit_list = arcade.check_for_collision_with_list(self.player, self.gate_list)
         if len(hit_list) != 0:
@@ -280,20 +335,34 @@ class Director(arcade.Window):
                         self.player_speed = globals.SPRINT_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
                         arcade.play_sound(self.sound_powerUp)
-                        self.player.operand += 1
+                        self.player.switch_operand()
+                        self.player_sprinting = True
+                        self.playerNumber = arcade.load_texture(f'assets/numbers/{self.player.operand}.png')
                         self.score += 1
-                    elif i.value % self.player.operand == 1:
+                        self.total_score += 1
+                        print("Correct answer")
+                    else:
                         self.player_speed = globals.SLOW_SPEED
                         self.sprint_cooldown = globals.SPRINT_COOLDOWN
                         arcade.play_sound(self.sound_hurt)
+                        print("Wrong answer")
+
                     i.kill()
         
         if self.player.center_x > ((self.map.width*32) - (self.camera.viewport_width / 4)): 
-            try:
+            if self.mapId < 2:
                 self.mapId+=1
-            except:
-                game_over()
-            self.setup()
+                self.setup()
+            else: self.game_over()
+
+
+        if self.timer > 0.0:
+            self.timer -= delta_time
+            self.timer = round(self.timer, 2)
+            self.timer_text = f"Timer: {self.timer}"
+        else:
+            self.game_over()
+
 
 
                 

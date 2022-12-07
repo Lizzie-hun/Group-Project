@@ -1,13 +1,14 @@
 import arcade
 from director import Director
+import menu
 import globals
-from level import Level
 
 def main():
     """ Main function """
 
-    window = Director(globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.SCREEN_TITLE)
-    window.setup()
+    window = arcade.Window(globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.SCREEN_TITLE)
+    start_game = menu()
+    window.show_view(start_game)
     arcade.run()
 
 if __name__ == "__main__":

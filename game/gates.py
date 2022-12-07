@@ -3,12 +3,9 @@ import random
 import arcade
 
 class Gate(arcade.Sprite):
-    def __init__(self, scaling, value):
-        number_sprite_list = []
+    def __init__(self, scaling, value):        
+        digit_filename = f'assets/numbers/{str(value)[0]}.png'
         
-        super().__init__(f'assets/numbers/0.png', scaling)
+        super().__init__(digit_filename, scaling)
         self.value = value
 
-    def draw(self, *args, filter=None, pixelated=None, blend_function=None):
-        print("hello")
-        super.draw(args, filter, pixelated, blend_function)

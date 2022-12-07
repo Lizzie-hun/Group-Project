@@ -1,45 +1,93 @@
+# Find/Use Mouse Position in Pygame
+import pygame
+import main
 import arcade
-import arcade.gui
+from director import Director
 import globals
-
-
-class Menu:
-    def __init__(self):
-        self.background_color = globals.MENU_BACKGROUND_COLOR
-        self.v_box = arcade.gui.UIBoxLayout(space_between=20)
-        self.manager = arcade.gui.UIManager()
-        self.manager.enable()
-
-        self.button_style = {
-            "font_name": (globals.MENU_FONT, globals.MENU_BACKUP_FONT),
-            "font_size": globals.MENU_FONT_SIZE,
-            "font_color": globals.MENU_FONT_COLOR,
-            "border_width": globals.MENU_BUTTON_BORDER_WIDTH,
-            "border_color": globals.MENU_BUTTON_BORDER_COLOR,
-            "bg_color": globals.MENU_BUTTON_BACKGROUND_COLOR,
-
-            # used if button is pressed
-            "bg_color_pressed": globals.MENU_BUTTON_PRESS_BACKGROUND_COLOR,
-            "border_color_pressed": globals.MENU_BUTTON_PRESS_BORDER_COLOR,  # also used when hovered
-            "font_color_pressed": arcade.color.BLACK,
-        }
-
-        self.start_button = arcade.gui.UIFlatButton(text="Start", width=200, style=self.start_style)
-        self.quit_button = arcade.gui.UIFlatButton(text="Quit", width=200, style=self.start_style)
-
-        self.v_box.add(self.start_button)
-        self.v_box.add(self.quit_button)
-
-        self.manager.add(
-            arcade.gui.UIAnchorWidget(
-                anchor_x="center_x",
-                anchor_y="center_y",
-                child=self.v_box)
-        )
-
-
-    def draw_menu(self):
-        arcade.set_background_color(self.background_color)
-        self.clear()
-        self.manager.draw()
-
+ 
+pygame.init()
+ 
+WIDTH = 500
+HEIGHT = 500
+fps = 60
+timer = pygame.time.Clock()
+screen = pygame.display.set_mode([WIDTH, HEIGHT])
+pygame.display.set_caption('Dino Run Menu')
+main_menu = False
+font = pygame.font.Font('freesansbold.ttf', 24)
+menu_command = 0
+ 
+class Button:
+    def __init__(self, txt, pos):
+        self.text = txt
+        self.pos = pos
+        self.button = pygame.rect.Rect((self.pos[0], self.pos[1]), (260, 40))
+ 
+    def draw(self):
+        pygame.draw.rect(screen, 'light gray', self.button, 0, 5)
+        pygame.draw.rect(screen, 'dark gray', [self.pos[0], self.pos[1], 260, 40], 5, 5)
+        text2 = font.render(self.text, True, 'black')
+        screen.blit(text2, (self.pos[0] + 15, self.pos[1] + 7))
+ 
+    def check_clicked(self):
+        if self.button.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+            return True
+        else:
+            return False
+ 
+def draw_menu():
+    command = -1
+    pygame.draw.rect(screen, 'black', [100, 100, 300, 300])
+    pygame.draw.rect(screen, 'green', [100, 100, 300, 300], 5)
+    pygame.draw.rect(screen, 'white', [120, 120, 260, 40], 0, 5)
+    pygame.draw.rect(screen, 'gray', [120, 120, 260, 40], 5, 5)
+    txt = font.render('Welcome!', True, 'black')
+    screen.blit(txt, (135, 127))
+    # menu exit button
+    menu = Button('Exit Menu', (120, 350))
+    menu.draw()
+    button1 = Button('Start', (120, 180))
+    button1.draw()
+    button2 = Button('Select Character', (120, 240))
+    button2.draw()
+    button3 = Button('Setting', (120, 300))
+    button3.draw()
+    if menu.check_clicked():
+        command = 0
+    if button1.check_clicked():
+        command = 1
+    if button2.check_clicked():
+        command = 2
+    if button3.check_clicked():
+        command = 3
+    return command
+ 
+def draw_game():
+    menu_btn = Button('Main Menu', (230, 450))
+    menu_btn.draw()
+    menu = menu_btn.check_clicked()
+    return menu
+ 
+run = True
+while run:
+    screen.fill('light blue')
+    timer.tick(fps)
+    if main_menu:
+        menu_command = draw_menu()
+        if menu_command != -1:
+            main_menu = False
+    else:
+        main_menu = draw_game()
+        if menu_command == 1:
+            window = arcade.Window(globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.SCREEN_TITLE)
+            start_game = Director()
+            window.show_view(start_game)
+            start_game.setup()
+            arcade.run()
+ 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+ 
+    pygame.display.flip()
+pygame.quit()
