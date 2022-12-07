@@ -143,12 +143,18 @@ class Director(arcade.View):
 
 # When called, rest the map to the first level, and show the Game Over screen with stats.
     def game_over(self):
+        #Setting the map to the first map
         self.mapId = 1
+
+        # Resetting the player and clearing the screen
         self.player.kill()
         self.clear()
+
+        # Switching the view to the game over screen
         game_over = GameOverView(self, self.timer, self.total_score)
         arcade.get_window().show_view(game_over)
 
+        # Resetting the game.
         self.movingRight = False
         self.movingLeft = False
         self.setup()
