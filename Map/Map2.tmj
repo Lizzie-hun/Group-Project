@@ -179,19 +179,19 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/..\/..\/..\/..\/..\/..\/Downloads\/Volcano.tsx"
+         "source":"Volcano.tsx"
         }, 
         {
          "firstgid":466,
-         "source":"..\/..\/..\/..\/..\/..\/..\/Downloads\/pixelart-chemist-09-tiles-texture-practice-169-ratio-x5.tsx"
+         "source":"pixelart-chemist-09-tiles-texture-practice-169-ratio-x5.tsx"
         }, 
         {
          "firstgid":1866,
-         "source":"..\/..\/..\/..\/..\/..\/..\/Downloads\/RockTile.tsx"
+         "source":"RockTile.tsx"
         }, 
         {
          "firstgid":1902,
-         "source":"..\/..\/..\/..\/..\/..\/..\/Downloads\/p2-2.tsx"
+         "source":"p2-2.tsx"
         }],
  "tilewidth":32,
  "type":"map",
