@@ -51,7 +51,7 @@ class Director(arcade.View):
 
         self.scene = None
         self.map = None
-        self.mapId = 2
+        self.mapId = 1
 
         self.camera = None
         # HUD camera
@@ -118,9 +118,6 @@ class Director(arcade.View):
             gateSprite.center_y = gate[1] + 90
             self.gate_list.append(gateSprite)
 
-        #-------test wall------
-        # self.wall_list = arcade.SpriteList()
-        #------remove this-----
 
         # Player
         self.player = PlayerCharacter(self.dino_color) # Pass color in here (red, yellow, green, blue)
@@ -135,14 +132,7 @@ class Director(arcade.View):
         self.playerNumber = arcade.load_texture(f'assets/numbers/{self.player.operand}.png')
 
 
-        #--------Test Wall------------
-        # wall = arcade.Sprite(":resources:images/tiles/boxCrate_double.png", globals.SPRITE_SCALING)
-        # wall.center_x = 350
-        # wall.center_y = 150
-        # self.wall_list.append(wall)
-        #-------Remove this-----------
-
-        # Physics Engine
+        # Physics Engine referring to the layers on the tilemap
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player,
             platforms=self.scene.get_sprite_list(globals.LAYER_NAME_PLATFORMS),
@@ -151,6 +141,7 @@ class Director(arcade.View):
         )
         arcade.set_background_color(arcade.color.BLACK) 
 
+# When called, rest the map to the first level, and show the Game Over screen with stats.
     def game_over(self):
         self.mapId = 1
         self.player.kill()
@@ -164,12 +155,8 @@ class Director(arcade.View):
         self.timer = 45
         self.total_score = 0
 
-    # Camera centered on sprite
+    # Camera centered on sprite until the end of the map
     def center_camera_to_player(self):
-        # print(f"width: {self.map.width}")
-        # print(f"height: {self.map.height}")
-        # print(f"Camera w: {self.camera.viewport_width}")
-        # print(f"Player: {self.player.center_x}")
         if self.player.center_x < ((self.map.width*32) - (self.camera.viewport_width / 2)):
             screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
             screen_center_y = -(self.camera.viewport_height / 2)
@@ -188,7 +175,6 @@ class Director(arcade.View):
         # Clear the screen and start next frame render
         self.clear()
         # arcade.start_render()
-
         # Filter is so the image isn't blurry
         # self.player_list.draw(filter=arcade.gl.NEAREST)
         self.scene.draw(filter=arcade.gl.NEAREST)
@@ -349,7 +335,7 @@ class Director(arcade.View):
                         print("Wrong answer")
 
                     i.kill()
-        
+        # if the player reaches the end of the level or the time runs out, call the gamne over function
         if self.player.center_x > ((self.map.width*32) - (self.camera.viewport_width / 4)): 
             if self.mapId < 2:
                 self.mapId+=1
