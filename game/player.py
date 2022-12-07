@@ -115,14 +115,7 @@ class PlayerCharacter(arcade.Sprite):
             frame = self.cur_sprint_texture // globals.UPDATES_PER_FRAME
             direction = not self.facing_left
             self.texture = self.sprinting_textures[frame][direction]
-            
-
-    def is_divisible(self, value):
-        if self.operand % value == 0:
-            self.operand += 1
-            return True
-        else:
-            return False
+    
     
     def switch_operand(self):
         self.operand = 3
